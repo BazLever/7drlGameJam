@@ -35,7 +35,7 @@ public class TileRandomizer : MonoBehaviour
 
     private void Update()
     {
-        if (transform.position.y <= -40)
+        if (transform.position.y <= -50)
         {
             ChangeActiveTile();
         }

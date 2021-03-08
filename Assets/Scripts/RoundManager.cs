@@ -26,7 +26,7 @@ public class RoundManager : MonoBehaviour
         if (tileFalling == true)
         {
             randomTile[tileChosen].transform.position -= new Vector3(0, rateOfFall, 0);
-            if (randomTile[tileChosen].transform.position.y <= -40)
+            if (randomTile[tileChosen].transform.position.y <= -50)
             {
                 tileFalling = false;
             }
