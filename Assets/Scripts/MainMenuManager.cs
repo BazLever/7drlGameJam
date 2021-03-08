@@ -24,7 +24,7 @@ public class MainMenuManager : MonoBehaviour
     bool transitionToMenu;
     bool transitionToGameScene;
 
-    float timer;
+    public float timer;
 
     void Start()
     {
@@ -69,6 +69,7 @@ public class MainMenuManager : MonoBehaviour
         credits.SetActive(true);
         mainMenu.SetActive(false);
         transitionToCredits = false;
+        transitionToMenu = false;
         timer = 0;
     }
 
@@ -77,6 +78,7 @@ public class MainMenuManager : MonoBehaviour
         credits.SetActive(false);
         mainMenu.SetActive(true);
         transitionToMenu = false;
+        transitionToCredits = false;
         timer = 0;
     }
 
