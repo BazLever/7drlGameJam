@@ -108,8 +108,14 @@ public class PlayerController : MonoBehaviour
         {
             case MovementStates.walking:
                 WalkMovement();
-                if (Input.GetKeyDown(attackKey))
-                    moveState = MovementStates.attacking;
+
+                if (timerBetweenAttacks <= 0)
+                {
+                    if (Input.GetKeyDown(attackKey))
+                        moveState = MovementStates.attacking;
+                }
+                else
+                    timerBetweenAttacks -= Time.deltaTime;
                 break;
 
             case MovementStates.jumping:
@@ -312,6 +318,7 @@ public class PlayerController : MonoBehaviour
             {
                 moveState = MovementStates.walking;
                 sequentialAttackCount = 0;
+                timerBetweenAttacks = timeBetweenAttacks;
                 initialisedAttack = false;
             }
             else if (Input.GetKeyDown(attackKey) && sequentialAttackCount < attackComboLength) // reset the initialiser if the player continues the attack combo
