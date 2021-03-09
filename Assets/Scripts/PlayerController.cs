@@ -48,6 +48,19 @@ public class PlayerController : MonoBehaviour
     private bool wallJumping = false;
     private RaycastHit wallClimbHit;
 
+    [Space]
+    [Header("Attack Variables:")]
+    public float timeBetweenAttacks = 0.3f;
+    private float timerBetweenAttacks = 0;
+    public float attackStepForce = 35;
+    public float attackStepFalloff = 5;
+    public float attackRegainControlSpeed = 0.15f;
+    private float attackStepForceMultiplier;
+    private int attackComboLength = 2; // <-- this is the amount of attack animations that are in attack combo
+    private int sequentialAttackCount;
+    private bool initialisedAttack = false;
+    private Vector3 attackDirection = Vector3.zero;
+
 
     [Space]
     [Header("Referances:")]
@@ -64,9 +77,10 @@ public class PlayerController : MonoBehaviour
     public string mouseYInput = "Mouse Y";
     public KeyCode sprintKey = KeyCode.LeftShift;
     public KeyCode jumpKey = KeyCode.Space;
+    public KeyCode attackKey = KeyCode.Mouse0;
 
-    enum MovementStates { walking, jumping, wallClimb, grappling };
-    MovementStates moveState;
+    enum MovementStates { walking, jumping, wallClimb, attacking, grappling };
+    private MovementStates moveState;
 
     private LayerMask playerLayer;
 
@@ -87,15 +101,15 @@ public class PlayerController : MonoBehaviour
         moveDirection = GetMoveDirection();
 
         // change the move speed to either walk or sprint speed
+        // vvv this isn't in WalkMovement because other functions should change their speed aswell
         moveSpeed = Input.GetKey(sprintKey) ? sprintSpeed : walkSpeed;
 
         switch (moveState)
         {
             case MovementStates.walking:
                 WalkMovement();
-
-                if (Input.GetKeyDown(jumpKey) && charController.isGrounded)
-                    moveState = MovementStates.jumping;
+                if (Input.GetKeyDown(attackKey))
+                    moveState = MovementStates.attacking;
                 break;
 
             case MovementStates.jumping:
@@ -104,6 +118,10 @@ public class PlayerController : MonoBehaviour
 
             case MovementStates.wallClimb:
                 WallClimbMovement();
+                break;
+
+            case MovementStates.attacking:
+                Attack();
                 break;
 
             case MovementStates.grappling:
@@ -120,7 +138,7 @@ public class PlayerController : MonoBehaviour
                 if (Physics.Raycast(transform.position, moveDirection, out wallClimbHit, charController.radius + distanceToStartWallClimb, ~playerLayer))
                 {
                     // make sure the angle on the wall is under the threshold
-                    if (Vector3.Angle(-transform.forward, wallClimbHit.normal) < startWallClimbAngle && Mathf.Approximately(wallClimbHit.normal.y, 0f))
+                    if (Vector3.Angle(-moveDirection, wallClimbHit.normal) < startWallClimbAngle && Mathf.Approximately(wallClimbHit.normal.y, 0f))
                     {
                         // begin wall climb
                         moveState = MovementStates.wallClimb;
@@ -143,10 +161,15 @@ public class PlayerController : MonoBehaviour
 
     private void WalkMovement()
     {
+        // movement
         if (charController.isGrounded)
             charController.Move((moveDirection * moveSpeed + velocity * groundedVelocityMultiplier) * Time.deltaTime);
         else
             charController.Move(((moveDirection * moveSpeed * airControl) + velocity) * Time.deltaTime);
+
+        // go to jump state if possible
+        if (Input.GetKeyDown(jumpKey) && charController.isGrounded)
+            moveState = MovementStates.jumping;
     }
 
     private void Jump()
@@ -257,6 +280,43 @@ public class PlayerController : MonoBehaviour
                 // exit wall climb if you are no longer ascending or if the move direction is going away from the wall
                 moveState = MovementStates.walking;
                 initialisedWallClimb = false;
+            }
+        }
+    }
+
+    private void Attack()
+    {
+        if (!initialisedAttack)
+        {
+            // initialise the attack
+            if (moveDirection != Vector3.zero)
+                attackDirection = moveDirection; // may need to change if we want it to attack in the cameras direction instead of the players
+            else
+                attackDirection = transform.forward;
+
+            attackStepForceMultiplier = attackStepForce;
+            sequentialAttackCount++;
+
+            initialisedAttack = true;
+        }
+        else
+        {
+            // make the step falloff
+            attackStepForceMultiplier = Mathf.Lerp(attackStepForceMultiplier, 0, attackStepFalloff * Time.deltaTime);
+
+            // actually move in the attack direction
+            charController.Move((attackDirection * attackStepForceMultiplier + velocity) * Time.deltaTime);
+
+            // exit jump if the attack step has stopped
+            if (attackStepForceMultiplier <= attackRegainControlSpeed || (attackStepForceMultiplier <= moveSpeed * 0.5f && moveDirection != Vector3.zero))
+            {
+                moveState = MovementStates.walking;
+                sequentialAttackCount = 0;
+                initialisedAttack = false;
+            }
+            else if (Input.GetKeyDown(attackKey) && sequentialAttackCount < attackComboLength) // reset the initialiser if the player continues the attack combo
+            {
+                initialisedAttack = false;
             }
         }
     }
