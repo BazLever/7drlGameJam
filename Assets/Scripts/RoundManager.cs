@@ -1,65 +1,111 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class RoundManager : MonoBehaviour
 {
-    //general round stats
-    int round = 0;
-    int enemiesToSpawn;
+    public int currentRound = 1;
 
-    //tile changing variables
-    public GameObject[] randomTile;
-    int tileChosen;
-    bool tileFalling;
-    bool tileRising;
-    public float rateOfFall;
+    private bool roundInProgress;
+    private bool roundOver;
+
+    private int tileToDrop = -1;
+    private int tileToRaise = -1; // neg 1 means no tile in the array (i handle for this when calling for it)
+
+    public float tileMoveSpeed = 16;
+    public float tileLowerAmount = 60;
+    public float tileShakeTime = 1;
+    private float tileShakeTimer;
+    public TileRandomizer[] tiles;
+
+    public int enemyAmount = 10;
+    public float enemyAmountRoundMultiplier = 1.5f;
+    public int maxSpawnedEnemyAmount = 35;
+    private int enemiesToSpawnThisRound;
+    private GameObject[] enemies;
+
+
+    public NavMeshBaker navMeshBaker;
+    public GameObject enemy;
+
 
     void Start()
     {
+        navMeshBaker.BakeNavMesh();
 
+        tileShakeTimer = tileShakeTime;
+
+        // initialise round 1
+        roundInProgress = true;
+        roundOver = false;
+        enemiesToSpawnThisRound = (int)(enemyAmount * (currentRound * enemyAmountRoundMultiplier));
     }
-
 
     void Update()
     {
-        if (tileFalling == true)
+        // end round
+        if (roundOver)
         {
-            randomTile[tileChosen].transform.position -= new Vector3(0, rateOfFall, 0);
-            if (randomTile[tileChosen].transform.position.y <= -50)
-            {
-                tileFalling = false;
-            }
+            roundInProgress = false;
+
+            tileToRaise = tileToDrop;
+            while (tileToDrop == tileToRaise)
+                tileToDrop = Random.Range(0, tiles.Length);
+
+            // vvv handles for if the tile to raise is -1
+            if (tileToRaise >= 0)
+                tiles[tileToRaise].RandomiseActiveTile();
+
+            navMeshBaker.BakeNavMesh();
+
+            currentRound++;
+            roundOver = false;
         }
-        if (tileRising == true)
+
+        // reset the platforms before round start
+        if (!roundInProgress && MoveTiles())
         {
-            randomTile[tileChosen].transform.position += new Vector3(0, rateOfFall, 0);
-            if (randomTile[tileChosen].transform.position.y >= 0)
-            {
-                randomTile[tileChosen].transform.position = new Vector3(randomTile[tileChosen].transform.position.x, 0, randomTile[tileChosen].transform.position.z);
-                tileRising = false;
-                tileChosen = Random.Range(0, randomTile.Length);
-                tileFalling = true;
-            }
+            navMeshBaker.BakeNavMesh();
+            enemiesToSpawnThisRound = (int)(enemyAmount * (currentRound * enemyAmountRoundMultiplier));
+            roundInProgress = true;
         }
 
-
-
-        //debug code
-        if (Input.GetKeyDown(KeyCode.P))
+        // everything that happens mid round
+        if (roundInProgress)
         {
-            NewRound();
+            if (Input.GetKeyDown(KeyCode.N))
+                roundOver = true;
+
+            // enemy spawning and stuff here
         }
     }
 
-
-    public void NewRound()
+    /// <summary>
+    /// moves both the tile to raise and the tile to drop toward their desired positions and returns true if they are both successfully placed
+    /// </summary>
+    private bool MoveTiles()
     {
-        round += 1;
-        //Tile falling code
-        if (round > 1)
+        //                           vvv handles for if the tile to raise is -1
+        bool finishedRaisingTile = tileToRaise >= 0 ? !tiles[tileToRaise].Raise(tileMoveSpeed) : true;
+        bool finishedDropingTile = false;
+
+        if (tileShakeTimer <= 0)
         {
-            tileRising = true;
+            finishedDropingTile = !tiles[tileToDrop].Lower(tileMoveSpeed, tileLowerAmount);
         }
+        else
+        {
+            tileShakeTimer -= Time.deltaTime;
+            // need to shake the platform here
+        }
+
+        if (finishedRaisingTile && finishedDropingTile)
+        {
+            tileShakeTimer = tileShakeTime;
+            return true;
+        }
+
+        return false;
     }
 }

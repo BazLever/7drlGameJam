@@ -1955,7 +1955,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1970089588900830459}
-  - component: {fileID: 1162834855525257251}
   m_Layer: 8
   m_Name: Geo
   m_TagString: Untagged
@@ -1986,29 +1985,6 @@ Transform:
   m_Father: {fileID: 2111506658363832976}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1162834855525257251
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1626152155774350162}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cbb900eccb2a9a94dad5059eb74445e7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tileVariants:
-  - {fileID: 8204280793312363246}
-  - {fileID: 4158717870793298888}
-  - {fileID: 460602735303123116}
-  - {fileID: 5210013141098134508}
-  - {fileID: 4959829232473645774}
-  - {fileID: 731470290209147950}
-  - {fileID: 7474800618020453988}
-  - {fileID: 8645929859908776697}
-  - {fileID: 3289601004499055745}
-  tileChosen: 0
 --- !u!1 &1770331476735948858
 GameObject:
   m_ObjectHideFlags: 0
@@ -2644,6 +2620,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2111506658363832976}
+  - component: {fileID: 4234459493571486215}
   m_Layer: 8
   m_Name: LevelTile_Template
   m_TagString: Untagged
@@ -2668,6 +2645,28 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4234459493571486215
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2111506658363832979}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbb900eccb2a9a94dad5059eb74445e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileVariants:
+  - {fileID: 8204280793312363246}
+  - {fileID: 4158717870793298888}
+  - {fileID: 460602735303123116}
+  - {fileID: 5210013141098134508}
+  - {fileID: 4959829232473645774}
+  - {fileID: 731470290209147950}
+  - {fileID: 7474800618020453988}
+  - {fileID: 8645929859908776697}
+  - {fileID: 3289601004499055745}
 --- !u!1 &2111506658714215418
 GameObject:
   m_ObjectHideFlags: 0
