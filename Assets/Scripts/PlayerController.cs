@@ -6,6 +6,13 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [Space]
+    [Header("Health Variables:")]
+    public float currentHealth;
+    public float startingHealth = 100;
+    public float maxHealth = 100;
+    public bool isDead = false;
+
+    [Space]
     [Header("Camera Variables:")]
     public float lookSensitivity = 4;
     public float camXRotClamp = 45;
@@ -67,6 +74,8 @@ public class PlayerController : MonoBehaviour
     public Transform headPos;
     public Transform cameraParent;
     public Transform cameraPos;
+    public GameObject attackCollider;
+    private Animator anim;
     private CharacterController charController;
 
     [Space]
@@ -86,11 +95,15 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        anim = GetComponentInChildren<Animator>();
         charController = GetComponent<CharacterController>();
 
+        currentHealth = startingHealth;
         moveSpeed = walkSpeed;
         moveState = MovementStates.walking;
         playerLayer = LayerMask.GetMask("Player");
+
+        attackCollider.SetActive(false);
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -104,11 +117,16 @@ public class PlayerController : MonoBehaviour
         // vvv this isn't in WalkMovement because other functions should change their speed aswell
         moveSpeed = Input.GetKey(sprintKey) ? sprintSpeed : walkSpeed;
 
+        // set the animation variables
+        anim.SetBool("OnGround", Physics.Raycast(transform.position, Vector3.down, charController.height * 0.5f + 0.1f, ~playerLayer));
+        anim.SetBool("IsWalking", moveDirection != Vector3.zero);
+        anim.SetBool("IsSprinting", Input.GetKey(sprintKey));
+        anim.SetBool("IsWallClimbing", moveState == MovementStates.wallClimb);
+
         switch (moveState)
         {
             case MovementStates.walking:
                 WalkMovement();
-
                 if (timerBetweenAttacks <= 0)
                 {
                     if (Input.GetKeyDown(attackKey))
@@ -186,6 +204,10 @@ public class PlayerController : MonoBehaviour
             velocity.y = jumpForce;
             if (!wallJumping)
                 jumpDir = moveDirection;
+
+            // start the jump animation
+            anim.SetTrigger("Jump");
+
             initialisedJump = true;
         }
         else
@@ -262,7 +284,6 @@ public class PlayerController : MonoBehaviour
             // jump off wall and exit wall climb
             if (Input.GetKeyDown(jumpKey))
             {
-                print("Should Jump Off wall");
                 // add force away from the wall
                 if (Vector3.Dot(moveDirection, hit.normal) >= 0.5f)
                 {
@@ -303,11 +324,23 @@ public class PlayerController : MonoBehaviour
             attackStepForceMultiplier = attackStepForce;
             sequentialAttackCount++;
 
+            // attack animation
+            if (sequentialAttackCount == 1)
+                anim.SetTrigger("AttackLeft");
+            else if (sequentialAttackCount == 2)
+                anim.SetTrigger("AttackRight");
+
+            // reset the attack timer
+            timerBetweenAttacks = timeBetweenAttacks;
+
+            // enable the damage collider
+            attackCollider.SetActive(true);
+
             initialisedAttack = true;
         }
         else
         {
-            // make the step falloff
+            // make the attack step falloff
             attackStepForceMultiplier = Mathf.Lerp(attackStepForceMultiplier, 0, attackStepFalloff * Time.deltaTime);
 
             // actually move in the attack direction
@@ -319,12 +352,18 @@ public class PlayerController : MonoBehaviour
                 moveState = MovementStates.walking;
                 sequentialAttackCount = 0;
                 timerBetweenAttacks = timeBetweenAttacks;
+                attackCollider.SetActive(false);
                 initialisedAttack = false;
             }
-            else if (Input.GetKeyDown(attackKey) && sequentialAttackCount < attackComboLength) // reset the initialiser if the player continues the attack combo
+            else if (Input.GetKeyDown(attackKey) && timerBetweenAttacks <= 0) // reset the initialiser if the player continues the attack combo
             {
+                // reset the sequentialAttackCount if it's reached the end of the combo
+                if (sequentialAttackCount >= attackComboLength)
+                    sequentialAttackCount = 0;
                 initialisedAttack = false;
             }
+            else if (timerBetweenAttacks > 0)
+                timerBetweenAttacks -= Time.deltaTime;
         }
     }
 
@@ -410,5 +449,32 @@ public class PlayerController : MonoBehaviour
     public void AddForce(Vector3 force)
     {
         velocity += force;
+    }
+
+    /// <summary>
+    /// applies damage to the health and the knockback to the players velocity
+    /// </summary>
+    public void TakeDamage(float damage, Vector3 knockback)
+    {
+        // make sure the current health is not over the max
+        if (currentHealth > maxHealth)
+            currentHealth = maxHealth;
+
+        currentHealth -= damage;
+
+        // become dead if there is no health left
+        if (currentHealth <= 0)
+            isDead = true;
+
+        velocity += knockback;
+    }
+
+    public void Heal(float healAmount)
+    {
+        currentHealth += healAmount;
+
+        // make sure the current health is not over the max
+        if (currentHealth > maxHealth)
+            currentHealth = maxHealth;
     }
 }

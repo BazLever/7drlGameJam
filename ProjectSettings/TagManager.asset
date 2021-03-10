@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Sword
   - PartSpawnMenu
+  - Enemy
   layers:
   - Default
   - TransparentFX
