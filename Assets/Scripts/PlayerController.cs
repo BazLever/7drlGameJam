@@ -10,6 +10,8 @@ public class PlayerController : MonoBehaviour
     public float currentHealth;
     public float startingHealth = 100;
     public float maxHealth = 100;
+    public float invulnerableAfterHitTime = 0.1f;
+    public float invulnerableAfterHitTimer;
     public bool isDead = false;
 
     [Space]
@@ -98,6 +100,8 @@ public class PlayerController : MonoBehaviour
 
     private LayerMask playerLayer;
 
+    private bool gamePaused = false;
+
     void Start()
     {
         anim = GetComponentInChildren<Animator>();
@@ -108,10 +112,9 @@ public class PlayerController : MonoBehaviour
         moveState = MovementStates.walking;
         playerLayer = LayerMask.GetMask("Player");
 
-        attackCollider.SetActive(false);
+        invulnerableAfterHitTimer = invulnerableAfterHitTime;
 
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        attackCollider.SetActive(false);
     }
 
     void Update()
@@ -190,12 +193,16 @@ public class PlayerController : MonoBehaviour
                 desiredCharModelYRot = Mathf.Atan2(moveDirection.x, moveDirection.z) * Mathf.Rad2Deg;
         }
 
+        if (invulnerableAfterHitTimer > 0)
+            invulnerableAfterHitTimer -= Time.deltaTime;
+
         ApplyPhysics();
     }
 
     private void LateUpdate()
     {
-        CameraMovement();
+        if (!gamePaused)
+            CameraMovement();
     }
 
     private void WalkMovement()
@@ -485,17 +492,24 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     public void TakeDamage(float damage, Vector3 knockback)
     {
-        // make sure the current health is not over the max
-        if (currentHealth > maxHealth)
-            currentHealth = maxHealth;
+        if (invulnerableAfterHitTimer <= 0)
+        {
+            // make sure the current health is not over the max
+            if (currentHealth > maxHealth)
+                currentHealth = maxHealth;
 
-        currentHealth -= damage;
+            currentHealth -= damage;
 
-        // become dead if there is no health left
-        if (currentHealth <= 0)
-            isDead = true;
+            // become dead if there is no health left
+            if (currentHealth <= 0)
+                isDead = true;
 
-        velocity += knockback;
+            // add the enemies knockback
+            velocity += knockback;
+
+            // reset the invulnerable timer
+            invulnerableAfterHitTimer = invulnerableAfterHitTime;
+        }
     }
 
     public void Heal(float healAmount)
@@ -505,5 +519,13 @@ public class PlayerController : MonoBehaviour
         // make sure the current health is not over the max
         if (currentHealth > maxHealth)
             currentHealth = maxHealth;
+    }
+
+    /// <summary>
+    /// sets if the game is paused for this object
+    /// </summary>
+    public void SetGamePaused(bool pauseState)
+    {
+        gamePaused = pauseState;
     }
 }
