@@ -17,31 +17,36 @@ public class WalkingEnemy : MonoBehaviour
 
     [Space]
     [Header("Lunge Variables:")]
-    public float timeBetweenLunges = 2.5f;
-    public float timerBetweenLunges = 0;
     public float lungeSpeed = 25;
-    public float distanceFromPlayerToLunge = 3;
+    public float timeBetweenLunges = 2.5f;
+    private float timerBetweenLunges = 0;
+    public float lungePrepareTime = 0.75f;
+    private float lungePrepareTimer;
+    public float distanceFromPlayerToLunge = 4.5f;
     public float heightLevelDifferenceFromPlayerToLunge = 1.5f;
     public float lungeDistance = 6;
     private bool lunging = false;
     private bool initialisedLunge = false;
 
-    private NavMeshAgent agent;
-    private PlayerController player;
-    private Transform playerPos;
+    [Space]
+    [Header("Referances:")]
+    public GameObject attackCollider;
 
+    private Transform playerPos;
     private Rigidbody rb;
+    private NavMeshAgent agent;
+
 
     void Start()
     {
         playerPos = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
-        player = playerPos.gameObject.GetComponent<PlayerController>();
+        rb = GetComponent<Rigidbody>();
 
         agent = gameObject.GetComponent<NavMeshAgent>();
         agent.speed = walkSpeed;
         agent.enabled = false;
 
-        rb = GetComponent<Rigidbody>();
+        attackCollider.SetActive(false);
 
         currentHealth = startingHealth;
     }
@@ -56,23 +61,23 @@ public class WalkingEnemy : MonoBehaviour
             TryToEnableAgent();
         }
 
-        if (agent.enabled && agent.isOnNavMesh)
-            print("enemy has linked with navmesh");
-
 
         if (agent != null && agent.isOnNavMesh)
         {
-            rb.velocity = Vector3.zero;
 
             if (!lunging)
             {
                 // keep pathing toward the player
-                agent.SetDestination(playerPos.position);
+                if ((playerPos.position - transform.position).sqrMagnitude > distanceFromPlayerToLunge * distanceFromPlayerToLunge)
+                    agent.SetDestination(playerPos.position);
+                else
+                    agent.SetDestination(transform.position);
 
                 // check if player is within lunge distance
                 if (timerBetweenLunges <= 0 && new Vector3(playerPos.position.x - transform.position.x, 0, playerPos.position.z - transform.position.z).sqrMagnitude <= lungeDistance * lungeDistance &&
                     Mathf.Abs(playerPos.position.y - transform.position.y) <= heightLevelDifferenceFromPlayerToLunge)
                 {
+                    lungePrepareTimer = lungePrepareTime;
                     lunging = true;
                 }
                 else if(timerBetweenLunges > 0)
@@ -82,7 +87,14 @@ public class WalkingEnemy : MonoBehaviour
             }
             else
             {
-                Lunge();
+                if (lungePrepareTimer <= 0)
+                    Lunge();
+                else
+                {
+                    // decrament the timer and stand still
+                    lungePrepareTimer -= Time.deltaTime;
+                    agent.speed = 0;
+                }
             }
         }
     }
@@ -96,6 +108,8 @@ public class WalkingEnemy : MonoBehaviour
 
             agent.speed = lungeSpeed;
 
+            attackCollider.SetActive(true);
+
             initialisedLunge = true;
         }
         else
@@ -106,11 +120,23 @@ public class WalkingEnemy : MonoBehaviour
                 agent.speed = walkSpeed;
 
                 // reset the lunge
+                attackCollider.SetActive(false);
                 timerBetweenLunges = timeBetweenLunges;
                 lunging = false;
                 initialisedLunge = false;
             }
         }
+    }
+
+    public void StopLunging()
+    {
+        agent.speed = walkSpeed;
+
+        // reset the lunge
+        attackCollider.SetActive(false);
+        timerBetweenLunges = timeBetweenLunges;
+        lunging = false;
+        initialisedLunge = false;
     }
 
     private void TryToEnableAgent()
@@ -124,6 +150,13 @@ public class WalkingEnemy : MonoBehaviour
             transform.position = hit.point + new Vector3(0, 0.08334f, 0);
             agent.enabled = false;
             agent.enabled = true;
+
+            if (agent.isOnNavMesh)
+            {
+                rb.velocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+                rb.constraints = RigidbodyConstraints.FreezeAll;
+            }
         }
     }
 

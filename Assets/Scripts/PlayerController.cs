@@ -66,6 +66,7 @@ public class PlayerController : MonoBehaviour
     private int attackComboLength = 2; // <-- this is the amount of attack animations that are in attack combo
     private int sequentialAttackCount;
     private bool initialisedAttack = false;
+    private bool attackingForward = false;
     private Vector3 attackDirection = Vector3.zero;
 
 
@@ -77,6 +78,10 @@ public class PlayerController : MonoBehaviour
     public GameObject attackCollider;
     private Animator anim;
     private CharacterController charController;
+
+    public Transform characterModel;
+    private float desiredCharModelYRot = 0;
+    private float charModelYRot = 0;
 
     [Space]
     [Header("Controls:")]
@@ -175,6 +180,16 @@ public class PlayerController : MonoBehaviour
                 timerBetweenWallClimbs -= Time.deltaTime;
         }
 
+        // character model rotation
+        charModelYRot = Mathf.LerpAngle(charModelYRot, desiredCharModelYRot, 15f * Time.deltaTime);
+        characterModel.localRotation = Quaternion.Euler(0, -pitch + charModelYRot, 0);//Quaternion.Lerp(characterModel.localRotation, Quaternion.Euler(0, desiredCharModelYRot, 0), 15f * Time.deltaTime);
+        
+        if (moveState == MovementStates.walking || moveState == MovementStates.jumping)
+        {
+            if (moveDirection != Vector3.zero)
+                desiredCharModelYRot = Mathf.Atan2(moveDirection.x, moveDirection.z) * Mathf.Rad2Deg;
+        }
+
         ApplyPhysics();
     }
 
@@ -256,6 +271,9 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
+            // rotate the character model
+            desiredCharModelYRot = Mathf.Atan2(-wallClimbHit.normal.x, -wallClimbHit.normal.z) * Mathf.Rad2Deg;
+
             RaycastHit hit;
             if (Physics.Raycast(transform.position, -wallClimbHit.normal, out hit, charController.radius + distanceToStartWallClimb, ~playerLayer))
             {
@@ -317,9 +335,17 @@ public class PlayerController : MonoBehaviour
         {
             // initialise the attack
             if (moveDirection != Vector3.zero)
-                attackDirection = moveDirection; // may need to change if we want it to attack in the cameras direction instead of the players
+            {
+                attackDirection = moveDirection;
+                attackingForward = false;
+            }
             else
+            {
+                // attack in the cameras direction if standing still
                 attackDirection = transform.forward;
+
+                attackingForward = true;
+            }
 
             attackStepForceMultiplier = attackStepForce;
             sequentialAttackCount++;
@@ -340,6 +366,9 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
+            // rotate the character model
+            desiredCharModelYRot = Mathf.Atan2(attackDirection.x, attackDirection.z) * Mathf.Rad2Deg;
+
             // make the attack step falloff
             attackStepForceMultiplier = Mathf.Lerp(attackStepForceMultiplier, 0, attackStepFalloff * Time.deltaTime);
 
