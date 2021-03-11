@@ -17,6 +17,7 @@ public class MainMenuManager : MonoBehaviour
     public Button creditsButton;
     public Button backButtonCredits;
     public Button playButton;
+    public Button quitButton;
 
     public float transitionTime;
 
@@ -34,6 +35,7 @@ public class MainMenuManager : MonoBehaviour
         creditsButton.onClick.AddListener(CreditsOnClick);
         backButtonCredits.onClick.AddListener(BackOnClick);
         playButton.onClick.AddListener(PlayOnClick);
+        quitButton.onClick.AddListener(QuitOnClick);
     }
 
     void Update()
@@ -104,6 +106,11 @@ public class MainMenuManager : MonoBehaviour
     {
         loadingScreen.NowLoading();
         transitionToGameScene = true;
+    }
+
+    void QuitOnClick()
+    {
+        Application.Quit();
     }
 
 

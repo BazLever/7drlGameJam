@@ -3464,6 +3464,7 @@ MonoBehaviour:
   creditsButton: {fileID: 1669359939}
   backButtonCredits: {fileID: 480452940}
   playButton: {fileID: 1594948}
+  quitButton: {fileID: 1957814396}
   transitionTime: 1.6
   timer: 0
 --- !u!4 &340691774
