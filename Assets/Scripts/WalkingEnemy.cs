@@ -32,6 +32,7 @@ public class WalkingEnemy : MonoBehaviour
     [Header("Referances:")]
     public GameObject attackCollider;
 
+    private RoundManager roundManager;
     private Transform playerPos;
     private Rigidbody rb;
     private NavMeshAgent agent;
@@ -39,6 +40,7 @@ public class WalkingEnemy : MonoBehaviour
 
     void Start()
     {
+        roundManager = GameObject.FindGameObjectWithTag("RoundManager").GetComponent<RoundManager>();
         playerPos = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
         rb = GetComponent<Rigidbody>();
 
@@ -54,7 +56,10 @@ public class WalkingEnemy : MonoBehaviour
     void Update()
     {
         if (isDead)
+        {
+            roundManager.ModifyCurrentEnemyAmount(-1);
             Destroy(gameObject);
+        }
 
         if (!agent.isOnNavMesh)
         {

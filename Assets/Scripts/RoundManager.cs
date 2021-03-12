@@ -19,11 +19,13 @@ public class RoundManager : MonoBehaviour
     private float tileShakeTimer;
     public TileRandomizer[] tiles;
 
+
     public int enemyAmount = 10;
+    public float enemySpawnHeight = 50f;
     public float enemyAmountRoundMultiplier = 1.5f;
     public int maxSpawnedEnemyAmount = 35;
-    private int enemiesToSpawnThisRound;
-    private GameObject[] enemies;
+    private int enemiesToSpawnThisRound = 0;
+    private int currentEnemyAmount = 0;
 
 
     public NavMeshBaker navMeshBaker;
@@ -68,16 +70,25 @@ public class RoundManager : MonoBehaviour
         {
             navMeshBaker.BakeNavMesh();
             enemiesToSpawnThisRound = (int)(enemyAmount * (currentRound * enemyAmountRoundMultiplier));
+            currentEnemyAmount = 0;
+
+            // begin the next round
             roundInProgress = true;
         }
 
         // everything that happens mid round
         if (roundInProgress)
         {
-            if (Input.GetKeyDown(KeyCode.N))
+            if (enemiesToSpawnThisRound <= 0 && currentEnemyAmount <= 0)
                 roundOver = true;
 
             // enemy spawning and stuff here
+            if (currentEnemyAmount < maxSpawnedEnemyAmount && enemiesToSpawnThisRound > 0)
+            {
+                GameObject newEnemy = Instantiate(enemy, tiles[Random.Range(0, tiles.Length)].transform.position + new Vector3(0, enemySpawnHeight, 0), Quaternion.identity);
+                currentEnemyAmount++;
+                enemiesToSpawnThisRound--;
+            }
         }
     }
 
@@ -107,5 +118,13 @@ public class RoundManager : MonoBehaviour
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// adds the number to the current enemy amount
+    /// </summary>
+    public void ModifyCurrentEnemyAmount(int number)
+    {
+        currentEnemyAmount += number;
     }
 }

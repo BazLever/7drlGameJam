@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
@@ -78,6 +80,7 @@ public class PlayerController : MonoBehaviour
     public Transform cameraParent;
     public Transform cameraPos;
     public GameObject attackCollider;
+    public Slider healthBar;
     private Animator anim;
     private CharacterController charController;
 
@@ -111,14 +114,24 @@ public class PlayerController : MonoBehaviour
         moveSpeed = walkSpeed;
         moveState = MovementStates.walking;
         playerLayer = LayerMask.GetMask("Player");
-
         invulnerableAfterHitTimer = invulnerableAfterHitTime;
-
         attackCollider.SetActive(false);
+        healthBar.maxValue = maxHealth;
+
     }
 
     void Update()
     {
+        // go to main menu as soon as you die - [NOTE: this needs to change]
+        if (isDead)
+        {
+            // unlock and reveal the cursor
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+
+            SceneManager.LoadScene(0);
+        }
+
         moveDirection = GetMoveDirection();
 
         // change the move speed to either walk or sprint speed
@@ -510,6 +523,9 @@ public class PlayerController : MonoBehaviour
             // reset the invulnerable timer
             invulnerableAfterHitTimer = invulnerableAfterHitTime;
         }
+
+        // set the health bar to the players health
+        healthBar.value = currentHealth;
     }
 
     public void Heal(float healAmount)
@@ -519,6 +535,9 @@ public class PlayerController : MonoBehaviour
         // make sure the current health is not over the max
         if (currentHealth > maxHealth)
             currentHealth = maxHealth;
+
+        // set the health bar to the players health
+        healthBar.value = currentHealth;
     }
 
     /// <summary>
