@@ -170,7 +170,6 @@ public class PlayerController : MonoBehaviour
 
                 initialisedDeath = true;
             }
-            //SceneManager.LoadScene(0);
         }
         else
         {
@@ -527,7 +526,6 @@ public class PlayerController : MonoBehaviour
                                 Heal(playerAttributes.GetAttributeModifier(AttributeTypes.lifeSteal));
 
                             hitEnemies.Add(rayHits[i].transform.gameObject);
-                            Debug.Log("Player hit enemy");
                         }
                     }
                 }

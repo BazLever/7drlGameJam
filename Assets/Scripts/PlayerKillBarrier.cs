@@ -10,7 +10,6 @@ public class PlayerKillBarrier : MonoBehaviour
         {
             PlayerController playerController = other.GetComponent<PlayerController>();
             playerController.TakeDamage(playerController.currentHealth + 1, Vector3.zero);
-            Debug.Log("Player hit kill barrier");
         }
     }
 }
