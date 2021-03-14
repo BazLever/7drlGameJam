@@ -138,9 +138,9 @@ public class PieceSelectionUI : MonoBehaviour
                 torsoImage.sprite = damageTorsoPieceImage;
                 legsImage.sprite = damageLegsPieceImage;
 
-                headDescriptionText.text = characterName + ", LVL: " + playerAttributes.headPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Damage";
-                torsoDescriptionText.text = characterName + ", LVL: " + playerAttributes.torsoPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Damage";
-                legsDescriptionText.text = characterName + ", LVL: " + playerAttributes.legsPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Damage";
+                headDescriptionText.text = characterName + ", LVL: " + playerAttributes.headPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Damage" + (playerAttributes.headPieceLevel < playerAttributes.maxPieceLevel ? "\n + 1 LVL" : "");
+                torsoDescriptionText.text = characterName + ", LVL: " + playerAttributes.torsoPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Damage" + (playerAttributes.headPieceLevel < playerAttributes.maxPieceLevel ? "\n + 1 LVL" : "");
+                legsDescriptionText.text = characterName + ", LVL: " + playerAttributes.legsPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Damage" + (playerAttributes.headPieceLevel < playerAttributes.maxPieceLevel ? "\n + 1 LVL" : "");
                 break;
 
             case AttributeTypes.attackSpeed:
@@ -148,9 +148,9 @@ public class PieceSelectionUI : MonoBehaviour
                 torsoImage.sprite = attackSpeedTorsoPieceImage;
                 legsImage.sprite = attackSpeedLegsPieceImage;
 
-                headDescriptionText.text = characterName + ", LVL: " + playerAttributes.headPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Attack Speed";
-                torsoDescriptionText.text = characterName + ", LVL: " + playerAttributes.torsoPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Attack Speed";
-                legsDescriptionText.text = characterName + ", LVL: " + playerAttributes.legsPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Attack Speed";
+                headDescriptionText.text = characterName + ", LVL: " + playerAttributes.headPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Attack Speed" + (playerAttributes.headPieceLevel < playerAttributes.maxPieceLevel ? "\n + 1 LVL" : "");
+                torsoDescriptionText.text = characterName + ", LVL: " + playerAttributes.torsoPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Attack Speed" + (playerAttributes.headPieceLevel < playerAttributes.maxPieceLevel ? "\n + 1 LVL" : "");
+                legsDescriptionText.text = characterName + ", LVL: " + playerAttributes.legsPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Attack Speed" + (playerAttributes.headPieceLevel < playerAttributes.maxPieceLevel ? "\n + 1 LVL" : "");
                 break;
 
             case AttributeTypes.jumpHeight:
@@ -158,9 +158,9 @@ public class PieceSelectionUI : MonoBehaviour
                 torsoImage.sprite = jumpHeightTorsoPieceImage;
                 legsImage.sprite = jumpHeightLegsPieceImage;
 
-                headDescriptionText.text = characterName + ", LVL: " + playerAttributes.headPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Jump Height";
-                torsoDescriptionText.text = characterName + ", LVL: " + playerAttributes.torsoPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Jump Height";
-                legsDescriptionText.text = characterName + ", LVL: " + playerAttributes.legsPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Jump Height";
+                headDescriptionText.text = characterName + ", LVL: " + playerAttributes.headPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Jump Height" + (playerAttributes.headPieceLevel < playerAttributes.maxPieceLevel ? "\n + 1 LVL" : "");
+                torsoDescriptionText.text = characterName + ", LVL: " + playerAttributes.torsoPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Jump Height" + (playerAttributes.headPieceLevel < playerAttributes.maxPieceLevel ? "\n + 1 LVL" : "");
+                legsDescriptionText.text = characterName + ", LVL: " + playerAttributes.legsPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Jump Height" + (playerAttributes.headPieceLevel < playerAttributes.maxPieceLevel ? "\n + 1 LVL" : "");
                 break;
 
             case AttributeTypes.movementSpeed:
@@ -168,9 +168,9 @@ public class PieceSelectionUI : MonoBehaviour
                 torsoImage.sprite = movementSpeedTorsoPieceImage;
                 legsImage.sprite = movementSpeedLegsPieceImage;
 
-                headDescriptionText.text = characterName + ", LVL: " + playerAttributes.headPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Movement Speed";
-                torsoDescriptionText.text = characterName + ", LVL: " + playerAttributes.torsoPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Movement Speed";
-                legsDescriptionText.text = characterName + ", LVL: " + playerAttributes.legsPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Movement Speed";
+                headDescriptionText.text = characterName + ", LVL: " + playerAttributes.headPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Movement Speed" + (playerAttributes.headPieceLevel < playerAttributes.maxPieceLevel ? "\n + 1 LVL" : "");
+                torsoDescriptionText.text = characterName + ", LVL: " + playerAttributes.torsoPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Movement Speed" + (playerAttributes.headPieceLevel < playerAttributes.maxPieceLevel ? "\n + 1 LVL" : "");
+                legsDescriptionText.text = characterName + ", LVL: " + playerAttributes.legsPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Movement Speed" + (playerAttributes.headPieceLevel < playerAttributes.maxPieceLevel ? "\n + 1 LVL" : "");
                 break;
 
             case AttributeTypes.numberOfJumps:
@@ -178,9 +178,9 @@ public class PieceSelectionUI : MonoBehaviour
                 torsoImage.sprite = numberOfJumpsTorsoPieceImage;
                 legsImage.sprite = numberOfJumpsLegsPieceImage;
 
-                headDescriptionText.text = characterName + ", LVL: " + playerAttributes.headPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Number Of Jumps";
-                torsoDescriptionText.text = characterName + ", LVL: " + playerAttributes.torsoPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Number Of Jumps";
-                legsDescriptionText.text = characterName + ", LVL: " + playerAttributes.legsPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Number Of Jumps";
+                headDescriptionText.text = characterName + ", LVL: " + playerAttributes.headPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Number Of Jumps" + (playerAttributes.headPieceLevel < playerAttributes.maxPieceLevel ? "\n + 1 LVL" : "");
+                torsoDescriptionText.text = characterName + ", LVL: " + playerAttributes.torsoPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Number Of Jumps" + (playerAttributes.headPieceLevel < playerAttributes.maxPieceLevel ? "\n + 1 LVL" : "");
+                legsDescriptionText.text = characterName + ", LVL: " + playerAttributes.legsPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Number Of Jumps" + (playerAttributes.headPieceLevel < playerAttributes.maxPieceLevel ? "\n + 1 LVL" : "");
                 break;
 
             case AttributeTypes.healOverTime:
@@ -188,9 +188,9 @@ public class PieceSelectionUI : MonoBehaviour
                 torsoImage.sprite = healOverTimeTorsoPieceImage;
                 legsImage.sprite = healOverTimeLegsPieceImage;
 
-                headDescriptionText.text = characterName + ", LVL: " + playerAttributes.headPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Heal Over Time";
-                torsoDescriptionText.text = characterName + ", LVL: " + playerAttributes.torsoPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Heal Over Time";
-                legsDescriptionText.text = characterName + ", LVL: " + playerAttributes.legsPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Heal Over Time";
+                headDescriptionText.text = characterName + ", LVL: " + playerAttributes.headPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Heal Over Time" + (playerAttributes.headPieceLevel < playerAttributes.maxPieceLevel ? "\n + 1 LVL" : "");
+                torsoDescriptionText.text = characterName + ", LVL: " + playerAttributes.torsoPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Heal Over Time" + (playerAttributes.headPieceLevel < playerAttributes.maxPieceLevel ? "\n + 1 LVL" : "");
+                legsDescriptionText.text = characterName + ", LVL: " + playerAttributes.legsPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Heal Over Time" + (playerAttributes.headPieceLevel < playerAttributes.maxPieceLevel ? "\n + 1 LVL" : "");
                 break;
 
             case AttributeTypes.wallClimbHeight:
@@ -198,9 +198,9 @@ public class PieceSelectionUI : MonoBehaviour
                 torsoImage.sprite = wallClimbHeightTorsoPieceImage;
                 legsImage.sprite = wallClimbHeightLegsPieceImage;
 
-                headDescriptionText.text = characterName + ", LVL: " + playerAttributes.headPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Wall Climb Height";
-                torsoDescriptionText.text = characterName + ", LVL: " + playerAttributes.torsoPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Wall Climb Height";
-                legsDescriptionText.text = characterName + ", LVL: " + playerAttributes.legsPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Wall Climb Height";
+                headDescriptionText.text = characterName + ", LVL: " + playerAttributes.headPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Wall Climb Height" + (playerAttributes.headPieceLevel < playerAttributes.maxPieceLevel ? "\n + 1 LVL" : "");
+                torsoDescriptionText.text = characterName + ", LVL: " + playerAttributes.torsoPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Wall Climb Height" + (playerAttributes.headPieceLevel < playerAttributes.maxPieceLevel ? "\n + 1 LVL" : "");
+                legsDescriptionText.text = characterName + ", LVL: " + playerAttributes.legsPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Wall Climb Height" + (playerAttributes.headPieceLevel < playerAttributes.maxPieceLevel ? "\n + 1 LVL" : "");
                 break;
 
             case AttributeTypes.lifeSteal:
@@ -208,9 +208,9 @@ public class PieceSelectionUI : MonoBehaviour
                 torsoImage.sprite = lifeStealTorsoPieceImage;
                 legsImage.sprite = lifeStealLegsPieceImage;
 
-                headDescriptionText.text = characterName + ", LVL: " + playerAttributes.headPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Life Steal";
-                torsoDescriptionText.text = characterName + ", LVL: " + playerAttributes.torsoPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Life Steal";
-                legsDescriptionText.text = characterName + ", LVL: " + playerAttributes.legsPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Life Steal";
+                headDescriptionText.text = characterName + ", LVL: " + playerAttributes.headPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Life Steal" + (playerAttributes.headPieceLevel < playerAttributes.maxPieceLevel ? "\n + 1 LVL" : "");
+                torsoDescriptionText.text = characterName + ", LVL: " + playerAttributes.torsoPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Life Steal" + (playerAttributes.headPieceLevel < playerAttributes.maxPieceLevel ? "\n + 1 LVL" : "");
+                legsDescriptionText.text = characterName + ", LVL: " + playerAttributes.legsPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Life Steal" + (playerAttributes.headPieceLevel < playerAttributes.maxPieceLevel ? "\n + 1 LVL" : "");
                 break;
 
             case AttributeTypes.chanceToBlockDamage:
@@ -218,9 +218,9 @@ public class PieceSelectionUI : MonoBehaviour
                 torsoImage.sprite = chanceToBlockDamageTorsoPieceImage;
                 legsImage.sprite = chanceToBlockDamageLegsPieceImage;
 
-                headDescriptionText.text = characterName + ", LVL: " + playerAttributes.headPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Chance To Block Damage";
-                torsoDescriptionText.text = characterName + ", LVL: " + playerAttributes.torsoPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Chance To Block Damage";
-                legsDescriptionText.text = characterName + ", LVL: " + playerAttributes.legsPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Chance To Block Damage";
+                headDescriptionText.text = characterName + ", LVL: " + playerAttributes.headPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Chance To Block Damage" + (playerAttributes.headPieceLevel < playerAttributes.maxPieceLevel ? "\n + 1 LVL" : "");
+                torsoDescriptionText.text = characterName + ", LVL: " + playerAttributes.torsoPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Chance To Block Damage" + (playerAttributes.headPieceLevel < playerAttributes.maxPieceLevel ? "\n + 1 LVL" : "");
+                legsDescriptionText.text = characterName + ", LVL: " + playerAttributes.legsPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Chance To Block Damage" + (playerAttributes.headPieceLevel < playerAttributes.maxPieceLevel ? "\n + 1 LVL" : "");
                 break;
 
             //case AttributeTypes.enemiesExplodeOnDeath:
@@ -228,9 +228,9 @@ public class PieceSelectionUI : MonoBehaviour
                 //torsoImage.sprite = enemiesExplodeOnDeathTorsoPieceImage;
                 //legsImage.sprite = enemiesExplodeOnDeathLegsPieceImage;
                 //
-                //headDescriptionText.text = characterName + ", LVL: " + playerAttributes.headPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Enemies Explode On Death";
-                //torsoDescriptionText.text = characterName + ", LVL: " + playerAttributes.torsoPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Enemies Explode On Death";
-                //legsDescriptionText.text = characterName + ", LVL: " + playerAttributes.legsPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Enemies Explode On Death";
+                //headDescriptionText.text = characterName + ", LVL: " + playerAttributes.headPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Enemies Explode On Death" + (playerAttributes.headPieceLevel < playerAttributes.maxPieceLevel ? "\n + 1 LVL" : "");
+                //torsoDescriptionText.text = characterName + ", LVL: " + playerAttributes.torsoPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Enemies Explode On Death" + (playerAttributes.headPieceLevel < playerAttributes.maxPieceLevel ? "\n + 1 LVL" : "");
+                //legsDescriptionText.text = characterName + ", LVL: " + playerAttributes.legsPieceLevel + "/" + playerAttributes.maxPieceLevel + "\n + Enemies Explode On Death" + (playerAttributes.headPieceLevel < playerAttributes.maxPieceLevel ? "\n + 1 LVL" : "");
                 //break;
         }
 

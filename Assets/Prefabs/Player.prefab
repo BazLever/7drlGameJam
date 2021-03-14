@@ -250,6 +250,7 @@ MonoBehaviour:
   cameraParent: {fileID: 3841958178673234653}
   cameraPos: {fileID: 3841958179745350382}
   healthBar: {fileID: 0}
+  deathMenu: {fileID: 0}
   headDeathParticle: {fileID: 215449639028928033}
   torsoDeathParticle: {fileID: 410469212542362586}
   legsDeathParticle: {fileID: 9030792105363077156}
@@ -277,7 +278,7 @@ MonoBehaviour:
   headPieceLevel: 0
   torsoPieceLevel: 0
   legsPieceLevel: 0
-  maxPieceLevel: 10
+  maxPieceLevel: 5
   headRenderer: {fileID: 6560457507518143422}
   torsoRenderer: {fileID: 3055648282833439246}
   legsRenderer: {fileID: 307910459251551378}

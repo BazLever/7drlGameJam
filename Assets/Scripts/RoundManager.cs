@@ -35,6 +35,7 @@ public class RoundManager : MonoBehaviour
     [Space]
     [Header("Referances:")]
     public NavMeshBaker navMeshBaker;
+    public Animator roundCompleteAnim;
     public GameObject enemy;
 
 
@@ -68,6 +69,8 @@ public class RoundManager : MonoBehaviour
                 tiles[tileToRaise].RandomiseActiveTile();
 
             navMeshBaker.BakeNavMesh();
+
+            roundCompleteAnim.SetTrigger("Show");
 
             currentRound++;
             roundOver = false;
