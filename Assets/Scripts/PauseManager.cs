@@ -9,6 +9,7 @@ public class PauseManager : MonoBehaviour
     public Animator loadingScreen;
 
     private PlayerController playerController;
+    private PieceSelectionUI pieceSelection;
     private bool isPaused = false;
 
     public float transitionTime = 1.6f;
@@ -18,6 +19,7 @@ public class PauseManager : MonoBehaviour
     void Start()
     {
         playerController = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
+        pieceSelection = GameObject.FindGameObjectWithTag("PieceSelection").GetComponent<PieceSelectionUI>();
 
         transitionTimer = transitionTime;
 
@@ -43,17 +45,21 @@ public class PauseManager : MonoBehaviour
                 Time.timeScale = 0;
             } else if (isPaused)
             {
-                // lock and hide the cursor
-                Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
+                // lock and hide the cursor if the part selection menu is not open
+                if (!pieceSelection.IsOpen())
+                {
+                    Cursor.lockState = CursorLockMode.Locked;
+                    Cursor.visible = false;
+                }
 
                 pauseMenuAnim.SetBool("isPaused", false);
                 isPaused = false;
                 Time.timeScale = 1;
             }
-            
-            // tell the player if the game is paused or not to stop camera movement
+
+            // tell the player and piece selection menu if the game is paused or not
             playerController.SetGamePaused(isPaused);
+            pieceSelection.SetGamePaused(isPaused);
         }
 
         // transition to main menu
@@ -69,16 +75,20 @@ public class PauseManager : MonoBehaviour
 
     public void ResumeButton()
     {
-        // lock and hide the cursor
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        // lock and hide the cursor if the part selection menu is not open
+        if (!pieceSelection.IsOpen())
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
 
         pauseMenuAnim.SetBool("isPaused", false);
         isPaused = false;
         Time.timeScale = 1;
 
-        // tell the player if the game is paused or not to stop camera movement
+        // tell the player and piece selection menu if the game is paused or not
         playerController.SetGamePaused(isPaused);
+        pieceSelection.SetGamePaused(isPaused);
     }
 
     public void MainMenuButton()

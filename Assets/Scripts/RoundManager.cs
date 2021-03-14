@@ -19,15 +19,21 @@ public class RoundManager : MonoBehaviour
     private float tileShakeTimer;
     public TileRandomizer[] tiles;
 
-
+    [Space]
+    [Header("Enemy Spawning Variables:")]
     public int enemyAmount = 10;
     public float enemySpawnHeight = 50f;
     public float enemyAmountRoundMultiplier = 1.5f;
     public int maxSpawnedEnemyAmount = 35;
+    public float timeBetweenEnemySpawns = 0.25f;
+    private float timerBetweenEnemySpawns = 0;
     private int enemiesToSpawnThisRound = 0;
     private int currentEnemyAmount = 0;
+    private int tileToSpawnEnemyOn = 0;
+    public GameObject[] eliteEnemies;
 
-
+    [Space]
+    [Header("Referances:")]
     public NavMeshBaker navMeshBaker;
     public GameObject enemy;
 
@@ -41,7 +47,7 @@ public class RoundManager : MonoBehaviour
         // initialise round 1
         roundInProgress = true;
         roundOver = false;
-        enemiesToSpawnThisRound = (int)(enemyAmount * (currentRound * enemyAmountRoundMultiplier));
+        enemiesToSpawnThisRound = (int)(enemyAmount + (currentRound * enemyAmountRoundMultiplier));
     }
 
     void Update()
@@ -54,6 +60,8 @@ public class RoundManager : MonoBehaviour
             tileToRaise = tileToDrop;
             while (tileToDrop == tileToRaise)
                 tileToDrop = Random.Range(0, tiles.Length);
+
+            tiles[tileToDrop].tileShakeParticles.Play();
 
             // vvv handles for if the tile to raise is -1
             if (tileToRaise >= 0)
@@ -69,8 +77,9 @@ public class RoundManager : MonoBehaviour
         if (!roundInProgress && MoveTiles())
         {
             navMeshBaker.BakeNavMesh();
-            enemiesToSpawnThisRound = (int)(enemyAmount * (currentRound * enemyAmountRoundMultiplier));
+            enemiesToSpawnThisRound = (int)(enemyAmount + (currentRound * enemyAmountRoundMultiplier));
             currentEnemyAmount = 0;
+            tileToSpawnEnemyOn = 0;
 
             // begin the next round
             roundInProgress = true;
@@ -83,12 +92,32 @@ public class RoundManager : MonoBehaviour
                 roundOver = true;
 
             // enemy spawning and stuff here
-            if (currentEnemyAmount < maxSpawnedEnemyAmount && enemiesToSpawnThisRound > 0)
+            if (timerBetweenEnemySpawns <= 0)
             {
-                GameObject newEnemy = Instantiate(enemy, tiles[Random.Range(0, tiles.Length)].transform.position + new Vector3(0, enemySpawnHeight, 0), Quaternion.identity);
-                currentEnemyAmount++;
-                enemiesToSpawnThisRound--;
+                if (currentEnemyAmount < maxSpawnedEnemyAmount && enemiesToSpawnThisRound > 0)
+                {
+                    // spawn the actual enemy
+                    GameObject newEnemy;
+                    if (enemiesToSpawnThisRound > 1)
+                        newEnemy = Instantiate(enemy, tiles[tileToSpawnEnemyOn].transform.position + new Vector3(0, enemySpawnHeight, 0), Quaternion.identity);
+                    else
+                        newEnemy = Instantiate(eliteEnemies[Random.Range(0, eliteEnemies.Length)], tiles[tileToSpawnEnemyOn].transform.position + new Vector3(0, enemySpawnHeight, 0), Quaternion.identity);
+
+                    // progress the tile to spawn the enemy on for the next enemy
+                    tileToSpawnEnemyOn += tileToSpawnEnemyOn < tiles.Length ? 1 : -tileToSpawnEnemyOn;
+                    // make sure the enemies won't spawn on the dropped platform
+                    if (tileToSpawnEnemyOn == tileToDrop)
+                        tileToSpawnEnemyOn += tileToSpawnEnemyOn < tiles.Length ? 1 : -tileToSpawnEnemyOn;
+
+                    //reset the enemy spawning timer
+                    timerBetweenEnemySpawns = timeBetweenEnemySpawns;
+
+                    currentEnemyAmount++;
+                    enemiesToSpawnThisRound--;
+                }
             }
+            else
+                timerBetweenEnemySpawns -= Time.deltaTime;
         }
     }
 

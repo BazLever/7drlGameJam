@@ -5,6 +5,11 @@ using UnityEngine.AI;
 
 public class WalkingEnemy : MonoBehaviour
 {
+    public bool isAnElite = false;
+    public AttributeTypes attributeType = AttributeTypes.nullAttribute;
+    public GameObject attributeUpgradeBody = null;
+
+    [Space]
     [Header("Health Variables")]
     public float currentHealth;
     public float startingHealth = 35;
@@ -18,23 +23,29 @@ public class WalkingEnemy : MonoBehaviour
     [Space]
     [Header("Lunge Variables:")]
     public float lungeSpeed = 25;
-    public float timeBetweenLunges = 2.5f;
+    public float timeBetweenLunges = 2f;
     private float timerBetweenLunges = 0;
-    public float lungePrepareTime = 0.75f;
+    public float lungePrepareTime = 0.4f;
     private float lungePrepareTimer;
     public float distanceFromPlayerToLunge = 4.5f;
     public float heightLevelDifferenceFromPlayerToLunge = 1.5f;
-    public float lungeDistance = 6;
+    public float lungeDistance = 7;
     private bool lunging = false;
     private bool initialisedLunge = false;
 
     [Space]
     [Header("Referances:")]
+    public SkinnedMeshRenderer headRenderer;
+    public SkinnedMeshRenderer torsoRenderer;
+    public SkinnedMeshRenderer legsRenderer;
+    public GameObject deathParticle;
+
     public GameObject attackCollider;
 
     private RoundManager roundManager;
     private Transform playerPos;
     private Rigidbody rb;
+    private Animator anim;
     private NavMeshAgent agent;
 
 
@@ -43,8 +54,9 @@ public class WalkingEnemy : MonoBehaviour
         roundManager = GameObject.FindGameObjectWithTag("RoundManager").GetComponent<RoundManager>();
         playerPos = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
         rb = GetComponent<Rigidbody>();
+        anim = GetComponentInChildren<Animator>();
 
-        agent = gameObject.GetComponent<NavMeshAgent>();
+        agent = GetComponent<NavMeshAgent>();
         agent.speed = walkSpeed;
         agent.enabled = false;
 
@@ -55,17 +67,39 @@ public class WalkingEnemy : MonoBehaviour
 
     void Update()
     {
-        if (isDead)
-        {
-            roundManager.ModifyCurrentEnemyAmount(-1);
-            Destroy(gameObject);
-        }
-
+        // attach the agent to the navmesh
         if (!agent.isOnNavMesh)
         {
             TryToEnableAgent();
         }
 
+        // kill the enemy
+        if (isDead)
+        {
+            roundManager.ModifyCurrentEnemyAmount(-1);
+
+            // spawn the player attribute upgrade body
+            if (isAnElite)
+            {
+                GameObject spawnedAttributeUpgradeBody = Instantiate(attributeUpgradeBody, transform.position, transform.rotation);
+
+                PlayerAttributeUpgradePieces attributeUpgradePieces = spawnedAttributeUpgradeBody.GetComponent<PlayerAttributeUpgradePieces>();
+
+                attributeUpgradePieces.attributeType = attributeType;
+                attributeUpgradePieces.headRenderer.material = headRenderer.material;
+                attributeUpgradePieces.torsoRenderer.material = torsoRenderer.material;
+                attributeUpgradePieces.legsRenderer.material = legsRenderer.material;
+            }
+            else // spawn the body parts particle effect
+            {
+                Instantiate(deathParticle, transform.position, Quaternion.identity);
+            }
+
+            Destroy(gameObject);
+        }
+
+        // tell the animator if the enemy is grounded
+        anim.SetBool("OnGround", Physics.Raycast(transform.position, Vector3.down, 0.25f, ~gameObject.layer));
 
         if (agent != null && agent.isOnNavMesh)
         {
@@ -74,9 +108,19 @@ public class WalkingEnemy : MonoBehaviour
             {
                 // keep pathing toward the player
                 if ((playerPos.position - transform.position).sqrMagnitude > distanceFromPlayerToLunge * distanceFromPlayerToLunge)
+                {
                     agent.SetDestination(playerPos.position);
+
+                    // start the walking animation
+                    anim.SetBool("IsWalking", agent.velocity != Vector3.zero);
+                }
                 else
+                {
                     agent.SetDestination(transform.position);
+
+                    // stop the walking animation
+                    anim.SetBool("IsWalking", false);
+                }
 
                 // check if player is within lunge distance
                 if (timerBetweenLunges <= 0 && new Vector3(playerPos.position.x - transform.position.x, 0, playerPos.position.z - transform.position.z).sqrMagnitude <= lungeDistance * lungeDistance &&
@@ -98,7 +142,6 @@ public class WalkingEnemy : MonoBehaviour
                 {
                     // decrament the timer and stand still
                     lungePrepareTimer -= Time.deltaTime;
-                    agent.speed = 0;
                 }
             }
         }
@@ -113,6 +156,9 @@ public class WalkingEnemy : MonoBehaviour
 
             agent.speed = lungeSpeed;
 
+            // start the sprinting animation
+            anim.SetBool("IsSprinting", true);
+
             attackCollider.SetActive(true);
 
             initialisedLunge = true;
@@ -123,6 +169,9 @@ public class WalkingEnemy : MonoBehaviour
             if (agent.remainingDistance <= 0.05f)
             {
                 agent.speed = walkSpeed;
+
+                // stop the sprint animation
+                anim.SetBool("IsSprinting", false);
 
                 // reset the lunge
                 attackCollider.SetActive(false);
@@ -136,6 +185,9 @@ public class WalkingEnemy : MonoBehaviour
     public void StopLunging()
     {
         agent.speed = walkSpeed;
+
+        // stop the sprint animation
+        anim.SetBool("IsSprinting", false);
 
         // reset the lunge
         attackCollider.SetActive(false);
@@ -165,6 +217,9 @@ public class WalkingEnemy : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// damages and knocks back this enemy by the specified amount, will also set isDead to true if health is below zero
+    /// </summary>
     public void TakeDamage(float damage, Vector3 knockback)
     {
         // make sure the current health is not over the max
@@ -182,6 +237,9 @@ public class WalkingEnemy : MonoBehaviour
             agent.velocity += knockback;
     }
 
+    /// <summary>
+    /// heals this enemy by the specified amount
+    /// </summary>
     public void Heal(float healAmount)
     {
         currentHealth += healAmount;
