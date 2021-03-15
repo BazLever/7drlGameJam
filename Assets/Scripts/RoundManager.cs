@@ -5,7 +5,7 @@ using UnityEngine.AI;
 
 public class RoundManager : MonoBehaviour
 {
-    public int currentRound = 1;
+    public int currentRound = 0;
 
     private bool roundInProgress;
     private bool roundOver;
@@ -13,6 +13,8 @@ public class RoundManager : MonoBehaviour
     private int tileToDrop = -1;
     private int tileToRaise = -1; // neg 1 means no tile in the array (i handle for this when calling for it)
 
+    [Space]
+    [Header("Map Tile Variables:")]
     public float tileMoveSpeed = 16;
     public float tileLowerAmount = 60;
     public float tileShakeTime = 1;
@@ -112,10 +114,10 @@ public class RoundManager : MonoBehaviour
                         newEnemy = Instantiate(eliteEnemies[Random.Range(0, eliteEnemies.Length)], tiles[tileToSpawnEnemyOn].transform.position + new Vector3(0, enemySpawnHeight, 0), Quaternion.identity);
 
                     // progress the tile to spawn the enemy on for the next enemy
-                    tileToSpawnEnemyOn += tileToSpawnEnemyOn < tiles.Length ? 1 : -tileToSpawnEnemyOn;
+                    tileToSpawnEnemyOn += tileToSpawnEnemyOn < tiles.Length - 1 ? 1 : -tileToSpawnEnemyOn;
                     // make sure the enemies won't spawn on the dropped platform
                     if (tileToSpawnEnemyOn == tileToDrop)
-                        tileToSpawnEnemyOn += tileToSpawnEnemyOn < tiles.Length ? 1 : -tileToSpawnEnemyOn;
+                        tileToSpawnEnemyOn += tileToSpawnEnemyOn < tiles.Length - 1 ? 1 : -tileToSpawnEnemyOn;
 
                     //reset the enemy spawning timer
                     timerBetweenEnemySpawns = timeBetweenEnemySpawns;
