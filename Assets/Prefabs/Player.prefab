@@ -363,9 +363,9 @@ MonoBehaviour:
   lifeStealHeadPieceMaterial: {fileID: 2100000, guid: b2c2ad7d6a164434da095eb32cd001ad, type: 2}
   lifeStealTorsoPieceMaterial: {fileID: 2100000, guid: 4d5dca40a1dad4f4a9c7e26343153693, type: 2}
   lifeStealLegsPieceMaterial: {fileID: 2100000, guid: 8d8422dbdc7beb14e8156d63b5e2a453, type: 2}
-  chanceToBlockDamageHeadPieceMaterial: {fileID: 0}
-  chanceToBlockDamageTorsoPieceMaterial: {fileID: 0}
-  chanceToBlockDamageLegsPieceMaterial: {fileID: 0}
+  chanceToBlockDamageHeadPieceMaterial: {fileID: 2100000, guid: 381ae96c9723eec4690d0626d07bda2c, type: 2}
+  chanceToBlockDamageTorsoPieceMaterial: {fileID: 2100000, guid: ac4b29f419da65d44b89f7de62908d80, type: 2}
+  chanceToBlockDamageLegsPieceMaterial: {fileID: 2100000, guid: 1c7966ef32cda334aa5a49629cd4150b, type: 2}
 --- !u!1 &3841958179745350379
 GameObject:
   m_ObjectHideFlags: 0

@@ -760,10 +760,10 @@ MonoBehaviour:
   jumpHeightCharacterName: Builder
   movementSpeedCharacterName: Dazza
   numberOfJumpsCharacterName: Alien
-  healOverTimeCharacterName: Wolfie-ween
+  healOverTimeCharacterName: Wolfie
   wallClimbHeightCharacterName: Spider
   lifeStealCharacterName: Vampire
-  chanceToBlockDamageCharacterName: null
+  chanceToBlockDamageCharacterName: Nija
 --- !u!1 &8062552817363377242
 GameObject:
   m_ObjectHideFlags: 0
