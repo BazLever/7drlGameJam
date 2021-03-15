@@ -763,7 +763,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e748416ab9dece41abe94b1f44dbe86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 40
+  damage: 20
   knockback: 105
 --- !u!54 &7345451674159576847
 Rigidbody:
@@ -834,10 +834,10 @@ MonoBehaviour:
   attributeType: 3
   attributeUpgradeBody: {fileID: 7143439909446297770, guid: e0f3a181d5d54164682bdadc7490d699, type: 3}
   currentHealth: 0
-  startingHealth: 55
-  maxHealth: 55
+  startingHealth: 40
+  maxHealth: 40
   isDead: 0
-  walkSpeed: 15
+  walkSpeed: 20
   lungeSpeed: 30
   timeBetweenLunges: 1.9
   lungePrepareTime: 0.4
