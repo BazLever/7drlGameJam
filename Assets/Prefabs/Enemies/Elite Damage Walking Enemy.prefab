@@ -53,12 +53,12 @@ MonoBehaviour:
   attributeType: 1
   attributeUpgradeBody: {fileID: 7143439909446297770, guid: e0f3a181d5d54164682bdadc7490d699, type: 3}
   currentHealth: 0
-  startingHealth: 70
-  maxHealth: 70
+  startingHealth: 40
+  maxHealth: 40
   isDead: 0
   walkSpeed: 7.5
   lungeSpeed: 35
-  timeBetweenLunges: 2
+  timeBetweenLunges: 3
   lungePrepareTime: 1
   distanceFromPlayerToLunge: 4.5
   heightLevelDifferenceFromPlayerToLunge: 1.5

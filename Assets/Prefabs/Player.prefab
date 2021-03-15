@@ -266,7 +266,7 @@ MonoBehaviour:
   camDistanceFromPlayer: 5
   camDistanceFromObject: 0.05
   canMoveCamera: 1
-  walkSpeed: 5
+  walkSpeed: 8
   sprintSpeed: 18
   airControl: 0.75
   drag: 5
