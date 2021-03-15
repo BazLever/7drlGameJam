@@ -266,7 +266,7 @@ MonoBehaviour:
   camDistanceFromPlayer: 5
   camDistanceFromObject: 0.05
   canMoveCamera: 1
-  walkSpeed: 8
+  walkSpeed: 10
   sprintSpeed: 18
   airControl: 0.75
   drag: 5
@@ -327,14 +327,14 @@ MonoBehaviour:
   headRenderer: {fileID: 6560457507518143422}
   torsoRenderer: {fileID: 3055648282833439246}
   legsRenderer: {fileID: 307910459251551378}
-  damage: 5
+  damage: 2
   attackSpeed: 0
-  jumpHeight: 6
-  movementSpeed: 4
+  jumpHeight: 2
+  movementSpeed: 3
   wallClimbHeight: 10
   numberOfJumps: 1
   healOverTime: 1
-  lifeSteal: 10
+  lifeSteal: 1
   chanceToBlockDamage: 5
   nullHeadPieceMaterial: {fileID: 0}
   nullTorsoPieceMaterial: {fileID: 0}
