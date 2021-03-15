@@ -5,16 +5,10 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
   - enabled: 1
     path: Assets/Scenes/MainMenu.unity
     guid: 920ac9158fdf4924bbfcbc8301fa25f2
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
   - enabled: 1
-    path: Assets/Scenes/TestLand_BazNew.unity
-    guid: d0a1403c75782fb40a5dd729872d7426
+    path: Assets/Scenes/TestLand_Harley.unity
+    guid: 45ba4c37cbfa6a143bab4804516cb20b
   m_configObjects: {}

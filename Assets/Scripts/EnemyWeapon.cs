@@ -13,7 +13,6 @@ public class EnemyWeapon : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             other.GetComponent<PlayerController>().TakeDamage(damage, (other.transform.position - transform.position).normalized * knockback);
-            Debug.Log("Enemy hit player");
             GetComponentInParent<WalkingEnemy>().StopLunging();
         }
     }

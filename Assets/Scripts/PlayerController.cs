@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
@@ -11,8 +13,10 @@ public class PlayerController : MonoBehaviour
     public float startingHealth = 100;
     public float maxHealth = 100;
     public float invulnerableAfterHitTime = 0.1f;
-    public float invulnerableAfterHitTimer;
+    private float invulnerableAfterHitTimer;
+    private float healOverTimeTimer = 0;
     public bool isDead = false;
+    private bool initialisedDeath = false;
 
     [Space]
     [Header("Camera Variables:")]
@@ -20,6 +24,7 @@ public class PlayerController : MonoBehaviour
     public float camXRotClamp = 45;
     public float camDistanceFromPlayer = 5;
     public float camDistanceFromObject = 0.05f;
+    public bool canMoveCamera = true;
     private float pitch = 0;
     private float yaw = 0;
 
@@ -36,6 +41,8 @@ public class PlayerController : MonoBehaviour
 
     [Space]
     [Header("Jump Variables:")]
+    public int numberOfJumps = 1;
+    private int numberOfJumpsLeft;
     public float jumpForce = 20;
     public float jumpDirectionMultiplier = 1;
     private bool initialisedJump = false;
@@ -59,8 +66,13 @@ public class PlayerController : MonoBehaviour
 
     [Space]
     [Header("Attack Variables:")]
+    public float baseDamage = 15;
+    public float knockback = 15;
+    [Space]
     public float timeBetweenAttacks = 0.3f;
     private float timerBetweenAttacks = 0;
+    public float attackDistanceToLockOn = 2f;
+    public float attackLockOnDistance = 1.3f;
     public float attackStepForce = 35;
     public float attackStepFalloff = 5;
     public float attackRegainControlSpeed = 0.15f;
@@ -69,18 +81,27 @@ public class PlayerController : MonoBehaviour
     private int sequentialAttackCount;
     private bool initialisedAttack = false;
     private bool attackingForward = false;
+    private bool attackLockedOn = false;
+    private List<GameObject> hitEnemies;
     private Vector3 attackDirection = Vector3.zero;
 
 
     [Space]
-    [Header("Referances:")]
+    [Header("References:")]
     public Transform headPos;
     public Transform cameraParent;
     public Transform cameraPos;
-    public GameObject attackCollider;
+    public Slider healthBar;
+    public GameObject deathMenu;
     private Animator anim;
     private CharacterController charController;
+    private PlayerAttributes playerAttributes;
 
+    public ParticleSystem headDeathParticle;
+    public ParticleSystem torsoDeathParticle;
+    public ParticleSystem legsDeathParticle;
+
+    // character model referances
     public Transform characterModel;
     private float desiredCharModelYRot = 0;
     private float charModelYRot = 0;
@@ -94,6 +115,7 @@ public class PlayerController : MonoBehaviour
     public KeyCode sprintKey = KeyCode.LeftShift;
     public KeyCode jumpKey = KeyCode.Space;
     public KeyCode attackKey = KeyCode.Mouse0;
+    public KeyCode interactKey = KeyCode.E;
 
     enum MovementStates { walking, jumping, wallClimb, attacking, grappling };
     private MovementStates moveState;
@@ -102,111 +124,155 @@ public class PlayerController : MonoBehaviour
 
     private bool gamePaused = false;
 
+
     void Start()
     {
         anim = GetComponentInChildren<Animator>();
         charController = GetComponent<CharacterController>();
+        playerAttributes = GetComponent<PlayerAttributes>();
 
         currentHealth = startingHealth;
         moveSpeed = walkSpeed;
         moveState = MovementStates.walking;
         playerLayer = LayerMask.GetMask("Player");
-
         invulnerableAfterHitTimer = invulnerableAfterHitTime;
+        healthBar.maxValue = maxHealth;
+        numberOfJumpsLeft = numberOfJumps;
 
-        attackCollider.SetActive(false);
+        hitEnemies = new List<GameObject>();
+
+        deathMenu.SetActive(false);
     }
 
     void Update()
     {
-        moveDirection = GetMoveDirection();
-
-        // change the move speed to either walk or sprint speed
-        // vvv this isn't in WalkMovement because other functions should change their speed aswell
-        moveSpeed = Input.GetKey(sprintKey) ? sprintSpeed : walkSpeed;
-
-        // set the animation variables
-        anim.SetBool("OnGround", Physics.Raycast(transform.position, Vector3.down, charController.height * 0.5f + 0.1f, ~playerLayer));
-        anim.SetBool("IsWalking", moveDirection != Vector3.zero);
-        anim.SetBool("IsSprinting", Input.GetKey(sprintKey));
-        anim.SetBool("IsWallClimbing", moveState == MovementStates.wallClimb);
-
-        switch (moveState)
+        // go to main menu as soon as you die - [NOTE: this needs to change]
+        if (isDead)
         {
-            case MovementStates.walking:
-                WalkMovement();
-                if (timerBetweenAttacks <= 0)
-                {
-                    if (Input.GetKeyDown(attackKey))
-                        moveState = MovementStates.attacking;
-                }
-                else
-                    timerBetweenAttacks -= Time.deltaTime;
-                break;
-
-            case MovementStates.jumping:
-                Jump();
-                break;
-
-            case MovementStates.wallClimb:
-                WallClimbMovement();
-                break;
-
-            case MovementStates.attacking:
-                Attack();
-                break;
-
-            case MovementStates.grappling:
-                break;
-        }
-
-        // check to start the wall run
-        if (velocity.y > 0 && (moveState == MovementStates.walking || moveState == MovementStates.jumping))
-        {
-            // make sure the timer is zero
-            if (timerBetweenWallClimbs <= 0)
+            if (!initialisedDeath)
             {
-                // raycast to check for a wall infront of the player
-                if (Physics.Raycast(transform.position, moveDirection, out wallClimbHit, charController.radius + distanceToStartWallClimb, ~playerLayer))
-                {
-                    // make sure the angle on the wall is under the threshold
-                    if (Vector3.Angle(-moveDirection, wallClimbHit.normal) < startWallClimbAngle && Mathf.Approximately(wallClimbHit.normal.y, 0f))
+                // unlock and reveal the cursor
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+
+                // play the death particle effects
+                headDeathParticle.Play();
+                torsoDeathParticle.Play();
+                legsDeathParticle.Play();
+
+                // deactivate the character model
+                characterModel.gameObject.SetActive(false);
+
+                canMoveCamera = false;
+
+                deathMenu.SetActive(true);
+                deathMenu.GetComponent<Animator>().SetBool("isPaused", true);
+
+                initialisedDeath = true;
+            }
+        }
+        else
+        {
+            moveDirection = GetMoveDirection();
+
+            // set the animation variables
+            anim.SetBool("OnGround", Physics.Raycast(transform.position, Vector3.down, charController.height * 0.5f + 0.1f, ~playerLayer));
+            anim.SetBool("IsWalking", moveDirection != Vector3.zero);
+            anim.SetBool("IsSprinting", Input.GetKey(sprintKey));
+            anim.SetBool("IsWallClimbing", moveState == MovementStates.wallClimb);
+
+            switch (moveState)
+            {
+                case MovementStates.walking:
+                    WalkMovement();
+                    if (timerBetweenAttacks <= 0)
                     {
-                        // begin wall climb
-                        moveState = MovementStates.wallClimb;
-                        timerBetweenWallClimbs = timeBetweenWallClimbs;
-                        initialisedJump = false;
+                        if (Input.GetKeyDown(attackKey))
+                            moveState = MovementStates.attacking;
+                    }
+                    else
+                        timerBetweenAttacks -= Time.deltaTime;
+                    break;
+
+                case MovementStates.jumping:
+                    Jump();
+                    break;
+
+                case MovementStates.wallClimb:
+                    WallClimbMovement();
+                    break;
+
+                case MovementStates.attacking:
+                    Attack();
+                    break;
+
+                case MovementStates.grappling:
+                    break;
+            }
+
+            // check to start the wall run
+            if (velocity.y > 0 && (moveState == MovementStates.walking || moveState == MovementStates.jumping))
+            {
+                // make sure the timer is zero
+                if (timerBetweenWallClimbs <= 0)
+                {
+                    // raycast to check for a wall infront of the player
+                    if (Physics.Raycast(transform.position, moveDirection, out wallClimbHit, charController.radius + distanceToStartWallClimb, ~playerLayer))
+                    {
+                        // make sure the angle on the wall is under the threshold
+                        if (Vector3.Angle(-moveDirection, wallClimbHit.normal) < startWallClimbAngle && Mathf.Approximately(wallClimbHit.normal.y, 0f))
+                        {
+                            // begin wall climb
+                            moveState = MovementStates.wallClimb;
+                            timerBetweenWallClimbs = timeBetweenWallClimbs;
+                            initialisedJump = false;
+                        }
                     }
                 }
+                else
+                    timerBetweenWallClimbs -= Time.deltaTime;
+            }
+
+            // character model rotation
+            charModelYRot = Mathf.LerpAngle(charModelYRot, desiredCharModelYRot, 15f * Time.deltaTime);
+            characterModel.localRotation = Quaternion.Euler(0, -pitch + charModelYRot, 0);//Quaternion.Lerp(characterModel.localRotation, Quaternion.Euler(0, desiredCharModelYRot, 0), 15f * Time.deltaTime);
+
+            // make the character model face in the movement direction
+            if (moveState == MovementStates.walking || moveState == MovementStates.jumping)
+            {
+                if (moveDirection != Vector3.zero)
+                    desiredCharModelYRot = Mathf.Atan2(moveDirection.x, moveDirection.z) * Mathf.Rad2Deg;
+            }
+
+            // decrement the invulnerability timer
+            if (invulnerableAfterHitTimer > 0)
+                invulnerableAfterHitTimer -= Time.deltaTime;
+
+            // heal the player every second by the attribute upgrades amount
+            if (healOverTimeTimer <= 0)
+            {
+                Heal(playerAttributes.GetAttributeModifier(AttributeTypes.healOverTime));
+                healOverTimeTimer = 1f;
             }
             else
-                timerBetweenWallClimbs -= Time.deltaTime;
+                healOverTimeTimer -= Time.deltaTime;
+
+            ApplyPhysics();
         }
-
-        // character model rotation
-        charModelYRot = Mathf.LerpAngle(charModelYRot, desiredCharModelYRot, 15f * Time.deltaTime);
-        characterModel.localRotation = Quaternion.Euler(0, -pitch + charModelYRot, 0);//Quaternion.Lerp(characterModel.localRotation, Quaternion.Euler(0, desiredCharModelYRot, 0), 15f * Time.deltaTime);
-        
-        if (moveState == MovementStates.walking || moveState == MovementStates.jumping)
-        {
-            if (moveDirection != Vector3.zero)
-                desiredCharModelYRot = Mathf.Atan2(moveDirection.x, moveDirection.z) * Mathf.Rad2Deg;
-        }
-
-        if (invulnerableAfterHitTimer > 0)
-            invulnerableAfterHitTimer -= Time.deltaTime;
-
-        ApplyPhysics();
     }
 
     private void LateUpdate()
     {
-        if (!gamePaused)
+        if (canMoveCamera && !gamePaused)
             CameraMovement();
     }
 
     private void WalkMovement()
     {
+        // change the move speed to either walk or sprint speed
+        // this ain't very optimised but that's fine for now
+        moveSpeed = (Input.GetKey(sprintKey) ? sprintSpeed : walkSpeed) + playerAttributes.GetAttributeModifier(AttributeTypes.movementSpeed);
+
         // movement
         if (charController.isGrounded)
             charController.Move((moveDirection * moveSpeed + velocity * groundedVelocityMultiplier) * Time.deltaTime);
@@ -215,7 +281,10 @@ public class PlayerController : MonoBehaviour
 
         // go to jump state if possible
         if (Input.GetKeyDown(jumpKey) && charController.isGrounded)
+        {
+            numberOfJumpsLeft = numberOfJumps + (int)playerAttributes.GetAttributeModifier(AttributeTypes.numberOfJumps);
             moveState = MovementStates.jumping;
+        }
     }
 
     private void Jump()
@@ -223,12 +292,16 @@ public class PlayerController : MonoBehaviour
         if (!initialisedJump)
         {
             // initialise the jump
-            velocity.y = jumpForce;
+            velocity.y = jumpForce + playerAttributes.GetAttributeModifier(AttributeTypes.jumpHeight);
+
+            // get the initial jump direction
             if (!wallJumping)
                 jumpDir = moveDirection;
 
             // start the jump animation
             anim.SetTrigger("Jump");
+
+            numberOfJumpsLeft--;
 
             initialisedJump = true;
         }
@@ -243,7 +316,7 @@ public class PlayerController : MonoBehaviour
                 charController.Move(movementVec * Time.deltaTime);
 
                 // reset jump direction
-                //jumpDir = GetMoveDirection();
+                jumpDir = GetMoveDirection();
             }
             else
                 charController.Move((jumpDir * jumpDirectionMultiplier * moveSpeed * airControl + velocity) * Time.deltaTime);
@@ -254,6 +327,12 @@ public class PlayerController : MonoBehaviour
                 velocity.y = 0f;
                 moveState = MovementStates.walking;
                 wallJumping = false;
+                initialisedJump = false;
+            }
+
+            // check if the player can do more jumps
+            if (Input.GetKeyDown(jumpKey) && numberOfJumpsLeft > 0)
+            {
                 initialisedJump = false;
             }
 
@@ -272,7 +351,7 @@ public class PlayerController : MonoBehaviour
         if (!initialisedWallClimb)
         {
             // set the new velocity
-            velocity = new Vector3(0, /*velocity.x + velocity.y + velocity.z +*/ wallClimbingForce, 0);
+            velocity = new Vector3(0, wallClimbingForce + playerAttributes.GetAttributeModifier(AttributeTypes.wallClimbHeight), 0);
 
             initialisedWallClimb = true;
         }
@@ -321,8 +400,10 @@ public class PlayerController : MonoBehaviour
                     jumpDir = new Vector3(hit.normal.x, 0, hit.normal.z).normalized;
                 }
 
+
                 // exit the wall climb and enter jumping
                 moveState = MovementStates.jumping;
+                numberOfJumpsLeft = numberOfJumps + (int)playerAttributes.GetAttributeModifier(AttributeTypes.numberOfJumps);
                 wallJumping = true;
                 initialisedJump = false;
                 initialisedWallClimb = false;
@@ -354,7 +435,22 @@ public class PlayerController : MonoBehaviour
                 attackingForward = true;
             }
 
-            attackStepForceMultiplier = attackStepForce;
+            // check to lock on attack
+            attackLockedOn = false;
+            GameObject nearestEnemy = GetNearestEnemy();
+            if (nearestEnemy != null && (nearestEnemy.transform.position - transform.position).sqrMagnitude <= (attackDistanceToLockOn * attackDistanceToLockOn))
+            {
+                Vector3 toEnemy = new Vector3(nearestEnemy.transform.position.x - transform.position.x, 0, nearestEnemy.transform.position.z - transform.position.z).normalized;
+                attackDirection = toEnemy;
+                charController.Move((nearestEnemy.transform.position - transform.position) - toEnemy * (attackLockOnDistance + charController.radius));
+                attackStepForceMultiplier = 0;
+
+                Debug.Log("Locked On");
+                attackLockedOn = true;
+            }
+            else
+                attackStepForceMultiplier = attackStepForce;
+
             sequentialAttackCount++;
 
             // attack animation
@@ -366,8 +462,7 @@ public class PlayerController : MonoBehaviour
             // reset the attack timer
             timerBetweenAttacks = timeBetweenAttacks;
 
-            // enable the damage collider
-            attackCollider.SetActive(true);
+            hitEnemies.Clear();
 
             initialisedAttack = true;
         }
@@ -382,13 +477,12 @@ public class PlayerController : MonoBehaviour
             // actually move in the attack direction
             charController.Move((attackDirection * attackStepForceMultiplier + velocity) * Time.deltaTime);
 
-            // exit jump if the attack step has stopped
+            // exit attck if the attack step has stopped
             if (attackStepForceMultiplier <= attackRegainControlSpeed || (attackStepForceMultiplier <= moveSpeed * 0.5f && moveDirection != Vector3.zero))
             {
                 moveState = MovementStates.walking;
                 sequentialAttackCount = 0;
-                timerBetweenAttacks = timeBetweenAttacks;
-                attackCollider.SetActive(false);
+                timerBetweenAttacks = timeBetweenAttacks - playerAttributes.GetAttributeModifier(AttributeTypes.attackSpeed);
                 initialisedAttack = false;
             }
             else if (Input.GetKeyDown(attackKey) && timerBetweenAttacks <= 0) // reset the initialiser if the player continues the attack combo
@@ -400,6 +494,42 @@ public class PlayerController : MonoBehaviour
             }
             else if (timerBetweenAttacks > 0)
                 timerBetweenAttacks -= Time.deltaTime;
+
+            // actually attacking the enemies
+            RaycastHit[] rayHits = Physics.SphereCastAll(transform.position + attackDirection * 1f, 0.5f, attackDirection, 0f, ~playerLayer);
+            if (rayHits.Length > 0)
+            {
+                float damage = baseDamage + playerAttributes.GetAttributeModifier(AttributeTypes.damage);
+                for (int i = 0; i < rayHits.Length; ++i)
+                {
+                    if (rayHits[i].transform.CompareTag("Enemy"))
+                    {
+                        // check if the enemy has been hit already
+                        bool isNewEnemy = true;
+                        for (int j = 0; j < hitEnemies.Count; ++j)
+                        {
+                            if (rayHits[i].transform.gameObject == hitEnemies[j])
+                            {
+                                isNewEnemy = false;
+                                break;
+                            }
+                        }
+
+                        // damage the enemy
+                        if (isNewEnemy)
+                        {
+                            WalkingEnemy hitEnemy = rayHits[i].transform.GetComponent<WalkingEnemy>();
+                            hitEnemy.TakeDamage(damage, attackDirection * knockback);
+
+                            // lifesteal
+                            if (hitEnemy.isDead)
+                                Heal(playerAttributes.GetAttributeModifier(AttributeTypes.lifeSteal));
+
+                            hitEnemies.Add(rayHits[i].transform.gameObject);
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -492,6 +622,10 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     public void TakeDamage(float damage, Vector3 knockback)
     {
+        // don't do the damage calculations if the player has dodged the attack
+        if (Random.Range(0.1f, 100f) < playerAttributes.GetAttributeModifier(AttributeTypes.chanceToBlockDamage))
+            return;
+
         if (invulnerableAfterHitTimer <= 0)
         {
             // make sure the current health is not over the max
@@ -510,8 +644,14 @@ public class PlayerController : MonoBehaviour
             // reset the invulnerable timer
             invulnerableAfterHitTimer = invulnerableAfterHitTime;
         }
+
+        // set the health bar to the players health
+        healthBar.value = currentHealth;
     }
 
+    /// <summary>
+    /// heals the player by the given heal amount
+    /// </summary>
     public void Heal(float healAmount)
     {
         currentHealth += healAmount;
@@ -519,6 +659,9 @@ public class PlayerController : MonoBehaviour
         // make sure the current health is not over the max
         if (currentHealth > maxHealth)
             currentHealth = maxHealth;
+
+        // set the health bar to the players health
+        healthBar.value = currentHealth;
     }
 
     /// <summary>
@@ -528,4 +671,29 @@ public class PlayerController : MonoBehaviour
     {
         gamePaused = pauseState;
     }
+
+    /// <summary>
+    /// retruns the nearest enemy, or null if there are no enemies
+    /// </summary>
+    private GameObject GetNearestEnemy()
+    {
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+
+        // return null if there's no enemies
+        if (enemies.Length == 0)
+            return null;
+
+        GameObject closestEnemy = enemies[0];
+
+        for (int i = 1; i < enemies.Length; ++i)
+        {
+            if ((enemies[i].transform.position - transform.position).sqrMagnitude < (closestEnemy.transform.position - transform.position).sqrMagnitude)
+            {
+                closestEnemy = enemies[i];
+            }
+        }
+
+        return closestEnemy;
+    }
+
 }

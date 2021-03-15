@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class TileRandomizer : MonoBehaviour
 {
+    public ParticleSystem tileShakeParticles;
 
+    [Space]
     public GameObject[] tileVariants;
 
     private int tileChosen = 0;
@@ -56,6 +58,7 @@ public class TileRandomizer : MonoBehaviour
             return false;
 
         transform.position = Vector3.MoveTowards(transform.position, originPosition - new Vector3(0, lowerAmount, 0), moveSpeed * Time.deltaTime);
+        tileShakeParticles.Stop();
         return true;
     }
 }
