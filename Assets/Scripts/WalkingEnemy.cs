@@ -126,6 +126,9 @@ public class WalkingEnemy : MonoBehaviour
                 if (timerBetweenLunges <= 0 && new Vector3(playerPos.position.x - transform.position.x, 0, playerPos.position.z - transform.position.z).sqrMagnitude <= lungeDistance * lungeDistance &&
                     Mathf.Abs(playerPos.position.y - transform.position.y) <= heightLevelDifferenceFromPlayerToLunge)
                 {
+                    // start the punch wind up animation
+                    anim.SetTrigger("BeginPunch");
+
                     lungePrepareTimer = lungePrepareTime;
                     lunging = true;
                 }
@@ -157,7 +160,10 @@ public class WalkingEnemy : MonoBehaviour
             agent.speed = lungeSpeed;
 
             // start the sprinting animation
-            anim.SetBool("IsSprinting", true);
+            //anim.SetBool("IsSprinting", true);
+
+            // start the punch follow through animation
+            anim.SetTrigger("FollowThroughPunch");
 
             attackCollider.SetActive(true);
 

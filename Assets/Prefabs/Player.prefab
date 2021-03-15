@@ -261,7 +261,7 @@ MonoBehaviour:
   maxHealth: 100
   invulnerableAfterHitTime: 0.1
   isDead: 0
-  lookSensitivity: 4
+  lookSensitivity: 3.5
   camXRotClamp: 45
   camDistanceFromPlayer: 5
   camDistanceFromObject: 0.05
@@ -351,18 +351,18 @@ MonoBehaviour:
   movementSpeedHeadPieceMaterial: {fileID: 2100000, guid: c2a7069317f6b7a42a3137d3c685fc36, type: 2}
   movementSpeedTorsoPieceMaterial: {fileID: 2100000, guid: 0deaf9bfd033e094e9cc58c9009007eb, type: 2}
   movementSpeedLegsPieceMaterial: {fileID: 2100000, guid: 5036e00aa46df2547bfee2d9109daaa7, type: 2}
-  wallClimbHeightHeadPieceMaterial: {fileID: 0}
-  wallClimbHeightTorsoPieceMaterial: {fileID: 0}
-  wallClimbHeightLegsPieceMaterial: {fileID: 0}
+  wallClimbHeightHeadPieceMaterial: {fileID: 2100000, guid: 05f3053a88df65e4da48b027311cdb79, type: 2}
+  wallClimbHeightTorsoPieceMaterial: {fileID: 2100000, guid: 7af52968fb6842349a0afea2ceb6d15e, type: 2}
+  wallClimbHeightLegsPieceMaterial: {fileID: 2100000, guid: 84df35fdf2f657349aed682a7da6a3d7, type: 2}
   numberOfJumpsHeadPieceMaterial: {fileID: 2100000, guid: 6849c433538f1c547874a12ed77539fa, type: 2}
   numberOfJumpsTorsoPieceMaterial: {fileID: 2100000, guid: f1e86b9425573a44aa95a634a4d718ff, type: 2}
   numberOfJumpsLegsPieceMaterial: {fileID: 2100000, guid: ffa5ce63d4fd7974e9b756b045a3a000, type: 2}
   healOverTimeHeadPieceMaterial: {fileID: 2100000, guid: a3058741db172264ca4e74204390dbd7, type: 2}
   healOverTimeTorsoPieceMaterial: {fileID: 2100000, guid: 1d324e8400a021a4c8885c933aa960ce, type: 2}
   healOverTimeLegsPieceMaterial: {fileID: 2100000, guid: 81693d54e96b73c478e4c4570de31678, type: 2}
-  lifeStealHeadPieceMaterial: {fileID: 0}
-  lifeStealTorsoPieceMaterial: {fileID: 0}
-  lifeStealLegsPieceMaterial: {fileID: 0}
+  lifeStealHeadPieceMaterial: {fileID: 2100000, guid: b2c2ad7d6a164434da095eb32cd001ad, type: 2}
+  lifeStealTorsoPieceMaterial: {fileID: 2100000, guid: 4d5dca40a1dad4f4a9c7e26343153693, type: 2}
+  lifeStealLegsPieceMaterial: {fileID: 2100000, guid: 8d8422dbdc7beb14e8156d63b5e2a453, type: 2}
   chanceToBlockDamageHeadPieceMaterial: {fileID: 0}
   chanceToBlockDamageTorsoPieceMaterial: {fileID: 0}
   chanceToBlockDamageLegsPieceMaterial: {fileID: 0}

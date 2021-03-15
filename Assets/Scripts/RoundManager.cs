@@ -37,10 +37,13 @@ public class RoundManager : MonoBehaviour
     public NavMeshBaker navMeshBaker;
     public Animator roundCompleteAnim;
     public GameObject enemy;
+    private PlayerController playerController;
 
 
     void Start()
     {
+        playerController = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
+
         navMeshBaker.BakeNavMesh();
 
         tileShakeTimer = tileShakeTime;
@@ -71,6 +74,8 @@ public class RoundManager : MonoBehaviour
             navMeshBaker.BakeNavMesh();
 
             roundCompleteAnim.SetTrigger("Show");
+
+            playerController.Heal(playerController.maxHealth);
 
             currentRound++;
             roundOver = false;
