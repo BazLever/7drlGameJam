@@ -235,6 +235,9 @@ public class WalkingEnemy : MonoBehaviour
         // add the knockback
         if (agent != null)
             agent.velocity += knockback;
+
+        gameObject.GetComponent<AudioSource>().Play();
+
     }
 
     /// <summary>
