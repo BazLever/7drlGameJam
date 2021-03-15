@@ -22,7 +22,7 @@ public class DeathMenu : MonoBehaviour
         if (transitionToMainMenu)
         {
             if (transitionTimer <= 0)
-                SceneManager.LoadScene(0);
+                SceneManager.LoadScene(1);
             else
                 transitionTimer -= Time.deltaTime;
         }

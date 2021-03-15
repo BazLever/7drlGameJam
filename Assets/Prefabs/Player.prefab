@@ -1,5 +1,49 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1315351733
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1315351734}
+  - component: {fileID: 1315351735}
+  m_Layer: 9
+  m_Name: Sword Colider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &1315351734
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1315351733}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.25, z: 1.25}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 3841958179329218157}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1315351735
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1315351733}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2, y: 2, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!95 &1566384035
 Animator:
   serializedVersion: 3
@@ -50,7 +94,7 @@ Transform:
   - {fileID: 6346925691004723075}
   - {fileID: 2347497159582287543}
   m_Father: {fileID: 3841958179329218157}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3841958178268924790
 GameObject:
@@ -177,6 +221,7 @@ Transform:
   m_Children:
   - {fileID: 3841958178626908843}
   - {fileID: 3841958178268924791}
+  - {fileID: 1315351734}
   - {fileID: 8438378165455365483}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -221,7 +266,7 @@ MonoBehaviour:
   camDistanceFromPlayer: 5
   camDistanceFromObject: 0.05
   canMoveCamera: 1
-  walkSpeed: 12
+  walkSpeed: 5
   sprintSpeed: 18
   airControl: 0.75
   drag: 5
@@ -229,23 +274,23 @@ MonoBehaviour:
   groundedVelocityMultiplier: 0.5
   numberOfJumps: 1
   jumpForce: 20
-  jumpDirectionMultiplier: 0.5
+  jumpDirectionMultiplier: 0.25
   startWallClimbAngle: 90
-  distanceToStartWallClimb: 0.15
+  distanceToStartWallClimb: 0.3
   timeBetweenWallClimbs: 0.1
   wallClimbWallDistance: 0.1
   wallClimbStrafingMultiplier: 1
   wallClimbingForce: 30
-  wallClimbingForceFalloff: 6
-  wallClimbJumpOffForce: 12
+  wallClimbingForceFalloff: 3
+  wallClimbJumpOffForce: 20
   baseDamage: 15
   knockback: 15
-  timeBetweenAttacks: 0.2
+  timeBetweenAttacks: 0.3
   attackDistanceToLockOn: 3
   attackLockOnDistance: 1.3
-  attackStepForce: 35
+  attackStepForce: 20
   attackStepFalloff: 5
-  attackRegainControlSpeed: 0.07
+  attackRegainControlSpeed: 0.15
   headPos: {fileID: 3841958178268924791}
   cameraParent: {fileID: 3841958178673234653}
   cameraPos: {fileID: 3841958179745350382}
@@ -15183,21 +15228,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 16449dc0711bfb549b0e7bc8d4f5fd8c, type: 3}
   m_PrefabInstance: {fileID: 1583194219097836350}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &1329155336199351509 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 16449dc0711bfb549b0e7bc8d4f5fd8c, type: 3}
-  m_PrefabInstance: {fileID: 1583194219097836350}
-  m_PrefabAsset: {fileID: 0}
---- !u!137 &6560457507518143422 stripped
-SkinnedMeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 5689119011081457792, guid: 16449dc0711bfb549b0e7bc8d4f5fd8c, type: 3}
-  m_PrefabInstance: {fileID: 1583194219097836350}
-  m_PrefabAsset: {fileID: 0}
---- !u!137 &307910459251551378 stripped
-SkinnedMeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 1278257237648189356, guid: 16449dc0711bfb549b0e7bc8d4f5fd8c, type: 3}
-  m_PrefabInstance: {fileID: 1583194219097836350}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3101913614960197739 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4536417019500809045, guid: 16449dc0711bfb549b0e7bc8d4f5fd8c, type: 3}
@@ -15206,5 +15236,20 @@ Transform:
 --- !u!137 &3055648282833439246 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: -4638860253036379856, guid: 16449dc0711bfb549b0e7bc8d4f5fd8c, type: 3}
+  m_PrefabInstance: {fileID: 1583194219097836350}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &307910459251551378 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 1278257237648189356, guid: 16449dc0711bfb549b0e7bc8d4f5fd8c, type: 3}
+  m_PrefabInstance: {fileID: 1583194219097836350}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &6560457507518143422 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 5689119011081457792, guid: 16449dc0711bfb549b0e7bc8d4f5fd8c, type: 3}
+  m_PrefabInstance: {fileID: 1583194219097836350}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1329155336199351509 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 16449dc0711bfb549b0e7bc8d4f5fd8c, type: 3}
   m_PrefabInstance: {fileID: 1583194219097836350}
   m_PrefabAsset: {fileID: 0}
