@@ -385,6 +385,14 @@ public class PlayerController : MonoBehaviour
             charController.Move(movementVec * Time.deltaTime);
 
 
+            // check if the player hit thier head, if so end the wallrun
+            if (IsObjectAbove())
+            {
+                moveState = MovementStates.walking;
+                velocity.y = 0;
+                initialisedWallClimb = false;
+            }
+
             // jump off wall and exit wall climb
             if (Input.GetKeyDown(jumpKey))
             {
@@ -408,7 +416,7 @@ public class PlayerController : MonoBehaviour
                 initialisedJump = false;
                 initialisedWallClimb = false;
             }
-            else if (velocity.y < 0.1f || Vector3.Dot(moveDirection, hit.normal) > 0.5f) 
+            else if (velocity.y < 0.1f || Vector3.Dot(moveDirection, hit.normal) > 0.75f) 
             {
                 // exit wall climb if you are no longer ascending or if the move direction is going away from the wall
                 moveState = MovementStates.walking;
@@ -587,7 +595,7 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private bool IsObjectAbove()
     {
-        float rayLength = transform.localScale.y + charController.skinWidth * 1.1f;
+        float rayLength = transform.localScale.y + charController.skinWidth + (charController.height * 0.5f) + charController.center.y + 0.1f;
         return (
             // center check
             Physics.Raycast(transform.position, Vector3.up, rayLength, ~playerLayer) ||
